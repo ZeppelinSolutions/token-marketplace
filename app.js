@@ -1,12 +1,19 @@
-require('babel-register');
-require('babel-polyfill');
+'use strict'
+require('babel-register')
+require('babel-polyfill')
 
 import $ from 'jquery';
 import Accounts from './app/accounts'
 import MyTokens from './app/mytokens'
 import TokenSales from './app/tokensales'
-import Transactions from "./app/transactions";
+import Transactions from './app/transactions'
 import TokenPurchases from './app/tokenpurchases'
+
+import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './app/components/App.react'
+
+ReactDOM.render(<App/>, document.getElementById('app'))
 
 $(document).ready(async function() {
   const myToken = await MyTokens.deployed();
