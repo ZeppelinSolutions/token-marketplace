@@ -2,7 +2,7 @@ import $ from 'jquery'
 import Accounts from './accounts'
 import Transactions from './transactions'
 import { MyToken } from "./contracts"
-import { GAS, MYTOKEN_INITIAL_AMOUNT, showError } from "./constants"
+import { GAS, MYTOKEN_INITIAL_AMOUNT, MY_TOKEN_ADDRESS, showError } from "./constants"
 
 const MyTokens = {
   async deploy(owner) {
@@ -16,10 +16,9 @@ const MyTokens = {
     } catch(error) { showError(error) }
   },
 
-  async last() {
-    let address = $('#mytoken-address').find('.address').text()
+  async deployed() {
     try {
-      return await MyToken.at(address)
+      return await MyToken.at(MY_TOKEN_ADDRESS)
     } catch(error) { showError(error) }
   }
 }

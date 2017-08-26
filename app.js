@@ -8,12 +8,9 @@ import TokenSales from './app/tokensales'
 import Transactions from "./app/transactions";
 import TokenPurchases from './app/tokenpurchases'
 
-Accounts.update();
-
-$(document).on('click', '.deploy', e => {
-  e.preventDefault();
-  let owner = $(e.target).siblings(".address").text();
-  MyTokens.deploy(owner);
+$(document).ready(async function() {
+  const myToken = await MyTokens.deployed();
+  Accounts.update(myToken);
 });
 
 $(document).on('click', '.select-buyer', e => {
@@ -75,13 +72,3 @@ $('#apply-buy').click(() => {
   let tokenPurchaseContractAddress = $('#tokenpurchase-contract-address').val();
   TokenPurchases.apply(sellerAddress, tokenPurchaseContractAddress);
 });
-
-module.exports = {
-  networks: {
-    development: {
-      host: "localhost",
-      port: 8545,
-      network_id: "*" // Match any network id
-    }
-  }
-};

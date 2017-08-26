@@ -1,5 +1,7 @@
 import contract from 'truffle-contract';
-import { provider } from "./constants"
+import Network from "./network"
+
+const provider = Network.provider();
 
 const MyToken = contract(require('../build/contracts/MyToken.json'));
 MyToken.setProvider(provider);

@@ -1,5 +1,6 @@
 import $ from 'jquery'
-import { web3, showError } from "./constants"
+import Network from './network'
+import { showError } from "./constants"
 
 const Transactions = {
   add(txHash) {
@@ -7,7 +8,7 @@ const Transactions = {
   },
 
   show(txHash) {
-    web3.eth.getTransaction(txHash, function(error, transactionInfo) {
+    Network.eth().getTransaction(txHash, function(error, transactionInfo) {
       if(error) showError(error);
       else {
         $("#transaction-info").find("#hash").text(transactionInfo.hash);
