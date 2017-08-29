@@ -16,8 +16,8 @@ export default class Transaction extends React.Component {
   render() {
     const transaction = this.state.transaction || {};
     return (
-      <div ref="transaction" className="col-sm-6">
-        <h3>Transaction Information</h3>
+      <div ref="transaction" className={"col " + this.props.col}>
+        <h4>Transaction Information</h4>
         <pre id="transaction-info">
           <p><b>Hash:</b> <span id="hash">{transaction.hash}</span></p>
           <p><b>Nonce:</b> <span id="nonce">{transaction.nonce}</span></p>

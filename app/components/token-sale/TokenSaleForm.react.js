@@ -18,7 +18,7 @@ export default class TokenSaleForm extends React.Component {
   render() {
     const tokenSale = this.state.tokenSale;
     return (
-      <div ref="tokenSaleForm">
+      <div ref="tokenSaleForm" className={"col " + this.props.col}>
         {(tokenSale === null) ?
           'Loading...' :
           <form onSubmit={this._handleSubmit}>
@@ -30,13 +30,13 @@ export default class TokenSaleForm extends React.Component {
               <p className="price">Wei <span>{tokenSale.price}</span></p>
               <p className="status">Status <span>{tokenSale.closed ? 'Closed' : 'Opened'}</span></p>
             </div>
-            <div className="form-group row">
-              <label htmlFor="contract-address" className="col-sm-3 col-form-label">Token Sale (address)</label>
-              <div className="col-sm-9"><input value={tokenSale.address} className="form-control" id="contract-address" disabled required/></div>
+            <div className="input-field">
+              <label htmlFor="contract-address" className={tokenSale.address ? 'active' : ''}>Token Sale (address)</label>
+              <input value={tokenSale.address} type="text" id="contract-address" disabled required/>
             </div>
-            <div className="form-group row">
-              <label htmlFor="buyer-address" className="col-sm-3 col-form-label">You (address)</label>
-              <div className="col-sm-9"><input value={this.state.buyerAddress} onChange={this._updateBuyerAddress} className="form-control" id="buyer-address" required/></div>
+            <div className="input-field">
+              <label htmlFor="buyer-address">You (address)</label>
+              <input value={this.state.buyerAddress} type="text" onChange={this._updateBuyerAddress} id="buyer-address" required/>
             </div>
             <button id="apply" className="btn btn-primary">Apply</button>
           </form>

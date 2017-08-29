@@ -17,8 +17,8 @@ export default class TransactionsList extends React.Component {
 
   render() {
     return (
-      <div ref="transactionsList" className="col-sm-6">
-        <h3>Transactions List</h3>
+      <div ref="transactionsList" className={"col " + this.props.col}>
+        <h4>Transactions List</h4>
         <pre id="transactions-list">{this._buildTransactionsList()}</pre>
       </div>
     );

@@ -19,14 +19,16 @@ export default class App extends React.Component {
   render() {
     const error = this.state.error
     return (
-      <div className="container">
+      <div>
         <Navbar/>
-        <div id="errors">{error ? error.message : ''}</div>
-        <Switch>
-          <Route path="/" exact component={BuySellPage}/>
-          <Route path="/token-sale/:address" component={TokenSalePage}/>
-          <Route path="/token-purchase/:address" component={TokenPurchasePage}/>
-        </Switch>
+        <div className="container">
+          <div id="errors">{error ? error.message : ''}</div>
+          <Switch>
+            <Route path="/" exact component={BuySellPage}/>
+            <Route path="/token-sale/:address" component={TokenSalePage}/>
+            <Route path="/token-purchase/:address" component={TokenPurchasePage}/>
+          </Switch>
+        </div>
       </div>
     );
   }

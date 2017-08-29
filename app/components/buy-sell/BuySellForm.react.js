@@ -27,27 +27,33 @@ export default class BuySellForm extends React.Component {
     const tokens = this.state.account ? this.state.account.tokens : '...'
     const balance = this.state.account ? this.state.account.balance : '...'
     return (
-      <form id="publish-contract" ref="buySellForm">
+      <form id="publish-contract" ref="buySellForm" className={"col " + this.props.col}>
         <h3>Sell/Buy some tokens</h3>
         <ERC20List selectERC20={this._selectERC20}/>
-        <div className="form-group row">
-          <label htmlFor="token-address" className="col-sm-3 col-form-label">Token (address)</label>
-          <div className="col-sm-9"><input onChange={this._updateToken} value={this.state.tokenAddress} className="form-control" id="token-address" required/></div>
+        <div className="input-field">
+          <label className={this.state.tokenAddress ? 'active' : ''} htmlFor="token-address">Token (address)</label>
+          <input onChange={this._updateToken} type="text" value={this.state.tokenAddress} id="token-address" required/>
         </div>
-        <div className="form-group row">
-          <label htmlFor="owner-address" className="col-sm-3 col-form-label">You (address)</label>
-          <div className="col-sm-9"><input onChange={this._updateOwner} value={this.state.ownerAddress} className="form-control" id="owner-address" disabled required/></div>
+        <div className="input-field">
+          <label className={this.state.ownerAddress ? 'active' : ''} htmlFor="owner-address">You (address)</label>
+          <input onChange={this._updateOwner} type="text" value={this.state.ownerAddress} id="owner-address" disabled required/>
         </div>
-        <div className="form-group row">
-          <label htmlFor="amount" className="col-sm-3 col-form-label">Amount of tokens ({tokens} available)</label>
-          <div className="col-sm-4"><input onChange={this._updateAmount} type="number" className="form-control" id="amount" required/></div>
+        <div className="input-field">
+          <label htmlFor="amount">Amount of tokens ({tokens} available)</label>
+          <input onChange={this._updateAmount} type="number" id="amount" required/>
         </div>
-        <div className="form-group row">
-          <label htmlFor="price" className="col-sm-3 col-form-label">Price in wei ({balance} available)</label>
-          <div className="col-sm-4"><input onChange={this._updatePrice} type="number" className="form-control" id="price" required/></div>
+        <div className="input-field">
+          <label htmlFor="price">Price in wei ({balance} available)</label>
+          <input onChange={this._updatePrice} type="number" id="price" required/>
         </div>
-        <button id="sell" className="btn btn-primary" onClick={this._sell}>Sell</button>
-        <button id="buy" className="btn btn-secondary" onClick={this._buy}>Buy</button>
+        <div className="input-field row">
+          <div className="col s1 offset-s10">
+            <button id="sell" className="btn btn-primary" onClick={this._sell}>Sell</button>
+          </div>
+          <div className="col s1">
+            <button id="buy" className="btn btn-secondary" onClick={this._buy}>Buy</button>
+          </div>
+        </div>
       </form>
     );
   }

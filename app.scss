@@ -1,0 +1,35 @@
+@import "css/variables";
+
+html {
+  //font-family: Roboto;
+  background-color: $primary-0;
+  color: $primary-2;
+}
+
+.container .row {
+  margin: 0;
+}
+
+.container {
+  width: 80% !important;
+}
+
+nav {
+  color: $primary-2;
+  background-color: $primary-5 !important;
+}
+
+#errors {
+  background-color: #ffd6c8;
+  color: darkred;
+}
+
+#transactions-list, #transaction-info {
+  background-color: $primary-1;
+  border: $primary-4 1px solid;
+  font-size: 12px;
+
+  p {
+    margin: 2px;
+  }
+}

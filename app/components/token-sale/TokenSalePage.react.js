@@ -5,9 +5,9 @@ import TransactionsList from '../transactions/TransactionsList.react'
 
 const TokenSalePage = ({ match }) => (
   <div className="row">
-    <TokenSaleForm tokenSaleAddress={match.params.address}/>
-    <TransactionsList/>
-    <Transaction/>
+    <TokenSaleForm tokenSaleAddress={match.params.address} col="s12"/>
+    <TransactionsList col="s6"/>
+    <Transaction col="s6"/>
   </div>
 )
 

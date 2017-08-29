@@ -18,7 +18,7 @@ export default class TokenPurchaseForm extends React.Component {
   render() {
     const tokenPurchase = this.state.tokenPurchase;
     return (
-      <div ref="tokenPurchaseForm">
+      <div ref="tokenPurchaseForm" className={"col " + this.props.col}>
         {(tokenPurchase === null) ?
           'Loading...' :
           <form onSubmit={this._handleSubmit}>
@@ -30,15 +30,13 @@ export default class TokenPurchaseForm extends React.Component {
               <p className="price">Wei <span>{tokenPurchase.price}</span></p>
               <p className="status">Status <span>{tokenPurchase.opened ? 'Opened' : 'Closed'}</span></p>
             </div>
-            <div className="form-group row">
-              <label htmlFor="contract-address" className="col-sm-3 col-form-label">Token Purchase (address)</label>
-              <div className="col-sm-9"><input value={tokenPurchase.address} className="form-control"
-                                               id="contract-address" disabled required/></div>
+            <div className="input-field">
+              <label htmlFor="contract-address" className={tokenPurchase.address ? 'active' : ''}>Token Purchase (address)</label>
+              <input value={tokenPurchase.address} type="text" id="contract-address" disabled required/>
             </div>
-            <div className="form-group row">
-              <label htmlFor="seller-address" className="col-sm-3 col-form-label">You (address)</label>
-              <div className="col-sm-9"><input value={this.state.sellerAddress} onChange={this._updateSellerAddress}
-                                               className="form-control" id="seller-address" required/></div>
+            <div className="input-field">
+              <label htmlFor="seller-address">You (address)</label>
+              <input value={this.state.sellerAddress} type="text" onChange={this._updateSellerAddress} id="seller-address" required/>
             </div>
             <button id="apply" className="btn btn-primary">Apply</button>
           </form>

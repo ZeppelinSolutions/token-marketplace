@@ -7,9 +7,9 @@ export default class BuySellPage extends React.Component {
   render() {
     return (
       <div className="row">
-        <BuySellForm/>
-        <TransactionsList/>
-        <Transaction/>
+        <BuySellForm col="s12"/>
+        <TransactionsList col="s6"/>
+        <Transaction col="s6"/>
       </div>
     );
   }
