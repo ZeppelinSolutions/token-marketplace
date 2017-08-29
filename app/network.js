@@ -11,8 +11,42 @@ const Network = {
   },
 
   provider() {
-    if(typeof web3 !== 'undefined') return web3.currentProvider
+    if (typeof web3 !== 'undefined') return web3.currentProvider
     return new Web3.providers.HttpProvider(LOCALHOST_PROVIDER)
+  },
+
+  getAccounts() {
+    return new Promise(function (resolve, reject) {
+      Network.eth().getAccounts(Network._web3Callback(resolve, reject))
+    });
+  },
+
+  getBalance(address) {
+    return new Promise(function (resolve, reject) {
+      Network.eth().getBalance(address, Network._web3Callback(resolve, reject))
+    });
+  },
+
+  getTransaction(txHash) {
+    return new Promise(function (resolve, reject) {
+      Network.eth().getTransaction(txHash, Network._web3Callback(resolve, reject))
+    });
+  },
+
+  promisified(group, method, ...args) {
+    return new Promise(function (resolve, reject) {
+      let parameters = args;
+      parameters[args.length] = callback(resolve, reject);
+      parameters.length++;
+      Network.web3()[group][method].apply(web3[group], parameters);
+    })
+  },
+
+  _web3Callback(resolve, reject) {
+    return function (error, value) {
+      if (error) reject(error);
+      else resolve(value);
+    }
   }
 }
 
