@@ -4,6 +4,7 @@ require('babel-polyfill')
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './app/components/App.react'
+import Root from './app/components/Root.react'
+import Store from './app/store'
 
-ReactDOM.render(<App/>, document.getElementById('app'))
+ReactDOM.render(<Root store={Store} />, document.getElementById('app'))

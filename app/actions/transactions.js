@@ -1,10 +1,26 @@
 import Network from '../network'
-import { showError } from "../constants"
+import ErrorActions from './errors'
+import * as ActionTypes from '../actiontypes'
 
 const TransactionActions = {
+  getTransactions() {
+    return dispatch => dispatch({ type: ActionTypes.RECEIVE_TRANSACTIONS })
+  },
+
+  getLastTransaction() {
+    return dispatch => dispatch({ type: ActionTypes.RECEIVE_LAST_TRANSACTION })
+  },
+
+  addTransaction(transaction) {
+    return dispatch => {
+      dispatch({ type: ActionTypes.ADD_TRANSACTION, transaction })
+      dispatch(TransactionActions.receiveTransaction(transaction))
+    }
+  },
+
   getData(txHash) {
-    return Network.getTransaction(txHash).then(transaction => {
-      return {
+    return dispatch => { Network.getTransaction(txHash)
+      .then(transaction => dispatch(TransactionActions.receiveTransaction({
         hash: transaction.hash,
         nonce: transaction.nonce,
         blackHash: transaction.blockHash,
@@ -14,9 +30,14 @@ const TransactionActions = {
         from: transaction.from,
         to: transaction.to,
         value: (transaction.value ? transaction.value.toString() : null)
-      }
-    })
-  }
+      })))
+      .catch(error => dispatch(ErrorActions.showError(error)))
+    }
+  },
+
+  receiveTransaction(transaction) {
+    return { type: ActionTypes.RECEIVE_TRANSACTION, transaction }
+  },
 };
 
 export default TransactionActions
