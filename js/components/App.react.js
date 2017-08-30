@@ -1,6 +1,7 @@
 import React from 'react'
 import Store from '../store'
 import Navbar from './Navbar.react'
+import SearchActions from '../actions/search'
 import NetworkActions from '../actions/network'
 import BuySellPage from './buy-sell/BuySellPage.react'
 import TokenSalePage from './token-sale/TokenSalePage.react'
@@ -10,7 +11,7 @@ import { withRouter, Switch, Route } from 'react-router-dom'
 class App extends React.Component {
   constructor(props){
     super(props)
-    this.state = { error: null, connected: null, couldAccessAccount: null }
+    this.state = { error: null, connected: null, couldAccessAccount: null, searching: false }
   }
 
   componentDidMount() {
@@ -27,15 +28,22 @@ class App extends React.Component {
     else if(!couldAccessAccount) return this._askToEnableAccount()
     else return (
       <div ref="app">
-        <Navbar/>
-        <div className="container">
-          <div id="errors">{this.state.error ? this.state.error.message : ''}</div>
-          <Switch>
-            <Route path="/" exact component={BuySellPage}/>
-            <Route path="/token-sale/:address" component={TokenSalePage}/>
-            <Route path="/token-purchase/:address" component={TokenPurchasePage}/>
-          </Switch>
-        </div>
+        <Navbar searchContract={address => this._searchContract(address)} />
+        {this.state.searching ?
+          <div className="container">
+            <h5>Searching...</h5>
+            <div className="progress">
+              <div className="indeterminate"></div>
+            </div>
+          </div> :
+          <div className="container">
+            <div id="errors">{this.state.error ? this.state.error.message : ''}</div>
+            <Switch>
+              <Route path="/" exact component={BuySellPage}/>
+              <Route path="/token-sale/:address" component={TokenSalePage}/>
+              <Route path="/token-purchase/:address" component={TokenPurchasePage}/>
+            </Switch>
+          </div>}
       </div>
     )
   }
@@ -66,13 +74,26 @@ class App extends React.Component {
     )
   }
 
+  _searchContract(address) {
+    if(address.length > 40) {
+      Store.dispatch(SearchActions.searchContract(address))
+    }
+  }
+
   _onChange() {
     if(this.refs.app) {
       const state = Store.getState()
-      if(state.tokenSale.valid) this.props.history.push(`/token-sale/${state.tokenSale.address}`);
-      // TODO: assume that is a token sale - need to check contract type/class
-      // if(state.tokenPurchase.valid)  this.props.history.push(`/token-purchase/${state.tokenPurchase.address}`);
-      this.setState({ error: state.error, connected: state.network.connected, couldAccessAccount: state.network.couldAccessAccount })
+      this.setState({
+        error: state.error,
+        connected: state.network.connected,
+        couldAccessAccount: state.network.couldAccessAccount,
+        searching: state.search.searching
+      })
+      if(state.search.found) {
+        state.search.tokenSale ?
+          this.props.history.push(`/token-sale/${state.search.address}`) :
+          this.props.history.push(`/token-purchase/${state.search.address}`)
+      }
     }
   }
 }

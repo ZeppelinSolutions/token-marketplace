@@ -1,6 +1,7 @@
 import React from 'react'
 import thunkMiddleware from 'redux-thunk'
 import error from './reducers/errors'
+import search from './reducers/search'
 import network from './reducers/network'
 import account from './reducers/accounts'
 import tokenSale from './reducers/tokensales'
@@ -10,6 +11,7 @@ import { createStore, combineReducers, applyMiddleware } from 'redux'
 
 const mainReducer = combineReducers({
   error,
+  search,
   network,
   account,
   transactions,
