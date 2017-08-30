@@ -10,18 +10,21 @@ import NetworkActions from "../actions/network";
 export default class App extends React.Component {
   constructor(props){
     super(props)
-    this.state = { error: null, connected: null }
+    this.state = { error: null, connected: null, couldAccessAccount: null }
   }
 
   componentDidMount() {
     Store.subscribe(() => this._onChange())
     Store.dispatch(NetworkActions.checkConnection())
+    Store.dispatch(NetworkActions.checkAccountAccess())
   }
 
   render() {
     const connected = this.state.connected
+    const couldAccessAccount = this.state.couldAccessAccount
     if(connected === null) return this._loading()
     else if(!connected) return this._askForProvider()
+    else if(!couldAccessAccount) return this._askToEnableAccount()
     else return (
       <div>
         <Navbar/>
@@ -45,6 +48,14 @@ export default class App extends React.Component {
     )
   }
 
+  _askToEnableAccount() {
+    return (
+      <div className="container">
+        <h3>Please enable your account</h3>
+      </div>
+    )
+  }
+
   _loading() {
     return (
       <div className="container">
@@ -57,6 +68,6 @@ export default class App extends React.Component {
 
   _onChange() {
     const state = Store.getState()
-    this.setState({ error: state.error, connected: state.network.connected })
+    this.setState({ error: state.error, connected: state.network.connected, couldAccessAccount: state.network.couldAccessAccount })
   }
 }
