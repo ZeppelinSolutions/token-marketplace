@@ -1,8 +1,12 @@
 import React from 'react';
 import * as ActionTypes from '../actiontypes'
 
-const TokenPurchasesReducer = (state = null, action) => {
+const TokenPurchasesReducer = (state = {}, action) => {
   switch (action.type) {
+    case ActionTypes.VALID_TOKEN_PURCHASE:
+      return Object.assign({}, state, { valid: true, address: action.tokenPurchaseAddress })
+    case ActionTypes.INVALID_TOKEN_PURCHASE:
+      return Object.assign({}, state, { valid: false, address: action.tokenPurchaseAddress })
     case ActionTypes.RECEIVE_TOKEN_PURCHASE:
       return Object.assign({}, state, {
         address: action.tokenPurchase.address,

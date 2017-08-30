@@ -2,10 +2,24 @@ import ErrorActions from './errors'
 import AccountActions from './accounts'
 import TransactionActions from './transactions'
 import * as ActionTypes from '../actiontypes'
-import { GAS } from "../constants"
-import { ERC20, TokenPurchase } from "../contracts"
+import { GAS } from '../constants'
+import { ERC20, TokenPurchase } from '../contracts'
+import Network from '../network'
 
 const TokenPurchaseActions = {
+  validate(address) {
+    return async function(dispatch) {
+      try {
+        const existsContract = await Network.validateCode(address, TokenPurchase.unlinked_binary)
+        existsContract ?
+          dispatch(TokenPurchaseActions.tokenPurchaseValid(address)) :
+          dispatch(TokenPurchaseActions.tokenPurchaseInvalid(address))
+      } catch(error) {
+        dispatch(TokenPurchaseActions.tokenPurchaseInvalid(address))
+      }
+    }
+  },
+
   getTokenPurchase(tokenPurchaseAddress) {
     return async function(dispatch) {
       try {
@@ -57,6 +71,14 @@ const TokenPurchaseActions = {
         dispatch(ErrorActions.showError(error))
       }
     }
+  },
+
+  tokenPurchaseValid(tokenPurchaseAddress) {
+    return { type: ActionTypes.VALID_TOKEN_PURCHASE, tokenPurchaseAddress }
+  },
+
+  tokenPurchaseInvalid(tokenPurchaseAddress) {
+    return { type: ActionTypes.INVALID_TOKEN_PURCHASE, tokenPurchaseAddress }
   },
 
   receiveTokenPurchase(tokenPurchase) {

@@ -19,19 +19,23 @@ const TransactionActions = {
   },
 
   getData(txHash) {
-    return dispatch => { Network.getTransaction(txHash)
-      .then(transaction => dispatch(TransactionActions.receiveTransaction({
-        hash: transaction.hash,
-        nonce: transaction.nonce,
-        blackHash: transaction.blockHash,
-        blockNumber: transaction.blockNumber,
-        gas: transaction.gas,
-        transactionIndex: transaction.transactionIndex,
-        from: transaction.from,
-        to: transaction.to,
-        value: (transaction.value ? transaction.value.toString() : null)
-      })))
-      .catch(error => dispatch(ErrorActions.showError(error)))
+    return async function(dispatch) {
+      try {
+        const transaction = await Network.getTransaction(txHash)
+        dispatch(TransactionActions.receiveTransaction({
+          hash: transaction.hash,
+          nonce: transaction.nonce,
+          blackHash: transaction.blockHash,
+          blockNumber: transaction.blockNumber,
+          gas: transaction.gas,
+          transactionIndex: transaction.transactionIndex,
+          from: transaction.from,
+          to: transaction.to,
+          value: (transaction.value ? transaction.value.toString() : null)
+        }))
+      } catch(error) {
+        dispatch(ErrorActions.showError(error))
+      }
     }
   },
 

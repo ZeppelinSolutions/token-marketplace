@@ -15,6 +15,18 @@ const Network = {
     return new Web3.providers.HttpProvider(LOCALHOST_PROVIDER)
   },
 
+  async validateCode(address, code) {
+    const foundCode = await Network.getCode(address)
+    const cleanFoundCode = foundCode ? foundCode.replace("0x", "").replace(/0/g, "") : ''
+    return cleanFoundCode === code;
+  },
+
+  getCode(address) {
+    return new Promise(function (resolve, reject) {
+      Network.eth().getCode(address, Network._web3Callback(resolve, reject))
+    });
+  },
+
   getAccounts() {
     return new Promise(function (resolve, reject) {
       Network.eth().getAccounts(Network._web3Callback(resolve, reject))

@@ -17,6 +17,10 @@ html {
 nav {
   color: $primary-2;
   background-color: $primary-5 !important;
+
+  .search-contract {
+    font-size: 10px;
+  }
 }
 
 #errors {

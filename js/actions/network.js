@@ -12,14 +12,15 @@ const NetworkActions = {
   },
 
   checkAccountAccess() {
-    return dispatch => {
-      Network.getAccounts()
-        .then(addresses => {
-          addresses[0] ? //TODO: should I use coinbase?
-            dispatch(NetworkActions.couldAccessAccount()) :
-            dispatch(NetworkActions.couldNotAccessAccount())
-        })
-        .catch(error => dispatch(ErrorActions.showError(error)))
+    return async function(dispatch) {
+      try {
+        const addresses = await Network.getAccounts()
+        addresses[0] ? //TODO: should I use coinbase?
+          dispatch(NetworkActions.couldAccessAccount()) :
+          dispatch(NetworkActions.couldNotAccessAccount())
+      } catch(error) {
+        dispatch(ErrorActions.showError(error))
+      }
     }
   },
 

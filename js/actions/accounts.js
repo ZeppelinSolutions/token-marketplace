@@ -5,14 +5,16 @@ import * as ActionTypes from '../actiontypes'
 
 const AccountActions = {
   findAccount() {
-    return dispatch => {
-      Network.getAccounts()
-        .then(addresses => {
-          const mainAddress = addresses[0];
-          dispatch(AccountActions.receiveAccount(mainAddress))
-          dispatch(AccountActions.getEtherBalance(mainAddress))
-        })
-        .catch(error => dispatch(ErrorActions.showError(error)))
+    return async function(dispatch) {
+      try {
+        const addresses = await Network.getAccounts()
+        const mainAddress = addresses[0]
+        dispatch(AccountActions.receiveAccount(mainAddress))
+        dispatch(AccountActions.getEtherBalance(mainAddress))
+
+      } catch(error) {
+        dispatch(ErrorActions.showError(error))
+      }
     }
   },
 
@@ -24,10 +26,13 @@ const AccountActions = {
   },
 
   getEtherBalance(address) {
-    return dispatch => {
-      Network.getBalance(address)
-        .then(balance => dispatch(AccountActions.receiveEtherBalance(balance)))
-        .catch(error => dispatch(ErrorActions.showError(error)))
+    return async function(dispatch) {
+      try {
+        const balance = await Network.getBalance(address);
+        dispatch(AccountActions.receiveEtherBalance(balance))
+      } catch(error) {
+        dispatch(ErrorActions.showError(error))
+      }
     }
   },
 
