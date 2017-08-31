@@ -18,22 +18,24 @@ export default class BuySellPage extends React.Component {
 
   render() {
     return (
-      <div className="row">
-        {this.state.deployed ? this._buildContractLink() : <BuySellForm col="s12"/>}
+      <div ref="buySellPage" className="row">
+        {this.state.deployed ? this._renderContractLink() : <BuySellForm col="s12"/>}
         <TransactionsList col="s6"/>
         <Transaction col="s6"/>
       </div>
     );
   }
 
-  _onChange() {
-    const state = Store.getState();
-    this.setState({ deployed: state.account.deployed, tokenSale: state.tokenSale, tokenPurchase: state.tokenPurchase })
+  _renderContractLink() {
+    return this.state.tokenSale ?
+      <NewTokenSaleLink tokenSale={this.state.tokenSale} col="s12"/> :
+      <NewTokenPurchaseLink tokenPurchase={this.state.tokenPurchase} col="s12"/>
   }
 
-  _buildContractLink() {
-    return this.state.tokenSale ?
-      <NewTokenSaleLink contract={this.state.tokenSale}/> :
-      <NewTokenPurchaseLink contract={this.state.tokenPurchase}/>
+  _onChange() {
+    if(this.refs.buySellPage) {
+      const state = Store.getState();
+      this.setState({ deployed: state.account.deployed, tokenSale: state.tokenSale, tokenPurchase: state.tokenPurchase })
+    }
   }
 }

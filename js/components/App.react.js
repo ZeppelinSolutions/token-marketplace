@@ -22,14 +22,11 @@ class App extends React.Component {
   }
 
   render() {
-    const search = this.state.search
     const connected = this.state.connected
     const couldAccessAccount = this.state.couldAccessAccount
-    const fetching = this.state.fetching || connected === null || couldAccessAccount === null
+    const fetching = connected && couldAccessAccount && this.state.fetching
 
-    if(!connected) return this._askForProvider()
-    else if(!couldAccessAccount) return this._askToEnableAccount()
-    else return (
+    return (
       <div ref="app">
         <Navbar searchContract={address => this._searchContract(address)} />
         <div className="container">
@@ -40,23 +37,9 @@ class App extends React.Component {
             <Route path="/token-purchase/:address" component={TokenPurchasePage}/>
           </Switch>
         </div>
-        <Modal open={this.state.fetching} message={'...loading...'}/>
-      </div>
-    )
-  }
-
-  _askForProvider() {
-    return (
-      <div className="container" ref="app">
-        <h3>Please access using MIST or Metamask</h3>
-      </div>
-    )
-  }
-
-  _askToEnableAccount() {
-    return (
-      <div className="container" ref="app">
-        <h3>Please enable your account</h3>
+        <Modal open={fetching} progressBar message={'...loading...'}/>
+        <Modal open={!connected} message={'Please access using MIST or Metamask'}/>
+        <Modal open={connected && !couldAccessAccount} message={'Please enable your account'}/>
       </div>
     )
   }

@@ -19,7 +19,6 @@ const mainReducer = combineReducers({
   transactions,
   tokenSale,
   tokenPurchase,
-  tokenPurchase,
 });
 
 const Store = createStore (
