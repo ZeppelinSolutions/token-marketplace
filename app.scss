@@ -39,3 +39,27 @@ nav {
     margin: 2px;
   }
 }
+
+#overlay {
+  position: fixed;
+  min-height: 100%;
+  width: 100%;
+  height: auto;
+  left: 0;
+  top: 0;
+  background: black;
+  opacity: .5;
+  margin:0 auto;
+
+  .content {
+    width: 50%;
+    margin-top: 20%;
+    margin-left: 25%;
+  }
+
+  &.hidden {
+    width: 0 !important;
+    height: 0 !important;
+    display: none;
+  }
+}

@@ -1,18 +1,18 @@
 import React from 'react';
 import * as ActionTypes from '../actiontypes'
 
-const initialState = { searching: false, found: false, tokenSale: null, tokenPurchase: null, address: null };
+const initialState = { found: false, tokenSale: null, tokenPurchase: null };
 
 const SearchReducer = (state = initialState, action) => {
   switch (action.type) {
-    case ActionTypes.START_SEARCHING:
-      return Object.assign({}, state, { searching: true, address: action.address, found: false })
     case ActionTypes.SEARCH_NOT_FOUND:
-      return Object.assign({}, state, { searching: false, address: action.address, found: false })
+      return Object.assign({}, state, { found: false })
     case ActionTypes.SEARCH_FOUND_TOKEN_SALE:
-      return Object.assign({}, state, { searching: false, tokenSale: action.tokenSale, found: true })
+      return Object.assign({}, state, { tokenSale: action.tokenSale, found: true })
     case ActionTypes.SEARCH_FOUND_TOKEN_PURCHASE:
-      return Object.assign({}, state, { searching: false, tokenPurchase: action.tokenPurchase, found: true })
+      return Object.assign({}, state, { tokenPurchase: action.tokenPurchase, found: true })
+    case ActionTypes.SEARCH_RESET:
+      return Object.assign({}, state, { tokenSale: null, tokenPurchase: null, found: false })
     default:
       return state
   }

@@ -22,6 +22,7 @@ const TokenPurchaseActions = {
   publish(erc20Address, buyer, amount, price) {
     return async function(dispatch) {
       console.log(`Buying ${amount} tokens from ${buyer} by Wei ${price}`);
+      dispatch(FetchingActions.start())
       try {
         const erc20 = await ERC20.at(erc20Address)
         const tokenPurchase = await TokenPurchase.new(erc20.address, amount, { from: buyer, gas: GAS })
@@ -32,6 +33,7 @@ const TokenPurchaseActions = {
         dispatch(AccountActions.updateAccount(buyer, erc20Address));
         const contract = await TokenPurchaseActions._buildContractInformation(tokenPurchase)
         dispatch(TokenPurchaseActions.receiveTokenPurchase(contract))
+        dispatch(FetchingActions.stop())
       } catch(error) {
         dispatch(ErrorActions.showError(error))
       }
@@ -41,6 +43,7 @@ const TokenPurchaseActions = {
   apply(tokenPurchaseAddress, seller) {
     return async function(dispatch) {
       console.log(`Seller ${seller} applying to purchase ${tokenPurchaseAddress}`);
+      dispatch(FetchingActions.start())
       try {
         const tokenPurchase = await TokenPurchase.at(tokenPurchaseAddress)
         const erc20Address = await tokenPurchase.token()
@@ -54,6 +57,7 @@ const TokenPurchaseActions = {
         dispatch(TransactionActions.addTransaction(response.tx))
         const contract = await TokenPurchaseActions._buildContractInformation(tokenPurchase)
         dispatch(TokenPurchaseActions.receiveTokenPurchase(contract))
+        dispatch(FetchingActions.stop())
       } catch (error) {
         dispatch(ErrorActions.showError(error))
       }

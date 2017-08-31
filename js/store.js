@@ -3,6 +3,7 @@ import thunkMiddleware from 'redux-thunk'
 import error from './reducers/errors'
 import search from './reducers/search'
 import network from './reducers/network'
+import fetching from './reducers/fetching'
 import account from './reducers/accounts'
 import tokenSale from './reducers/tokensales'
 import transactions from './reducers/transactions'
@@ -14,6 +15,7 @@ const mainReducer = combineReducers({
   search,
   network,
   account,
+  fetching,
   transactions,
   tokenSale,
   tokenPurchase,

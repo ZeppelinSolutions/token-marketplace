@@ -1,7 +1,4 @@
 import React from 'react'
-import Store from '../store'
-import TokenSaleActions from '../actions/tokensales'
-import TokenPurchaseActions from '../actions/tokenpurchases'
 import { Link } from 'react-router-dom'
 
 export default class Navbar extends React.Component {

@@ -1,4 +1,5 @@
 import ErrorActions from './errors'
+import FetchingActions from './fetching'
 import AccountActions from './accounts'
 import TransactionActions from './transactions'
 import * as ActionTypes from '../actiontypes'
@@ -22,6 +23,7 @@ const TokenSaleActions = {
   publish(erc20Address, seller, amount, price) {
     return async function(dispatch) {
       console.log(`Selling ${amount} tokens at ${erc20Address} from ${seller} by Wei ${price}`)
+      dispatch(FetchingActions.start())
       try {
         const erc20 = await ERC20.at(erc20Address)
         const tokenSale = await TokenSale.new(erc20Address, price, {from: seller, gas: GAS})
@@ -32,6 +34,7 @@ const TokenSaleActions = {
         dispatch(TransactionActions.addTransaction(response.tx))
         const contract = await TokenSaleActions._buildContractInformation(tokenSale)
         dispatch(TokenSaleActions.receiveTokenSale(contract))
+        dispatch(FetchingActions.stop())
       } catch (error) {
         dispatch(ErrorActions.showError(error))
       }
@@ -40,6 +43,7 @@ const TokenSaleActions = {
 
   apply(tokenSaleAddress, buyer) {
     return async function(dispatch) {
+      dispatch(FetchingActions.start())
       try {
         const tokenSale = await TokenSale.at(tokenSaleAddress)
         const erc20Address = await tokenSale.token()
@@ -51,6 +55,7 @@ const TokenSaleActions = {
         dispatch(AccountActions.updateAccount(buyer, erc20Address))
         const contract = await TokenSaleActions._buildContractInformation(tokenSale)
         dispatch(TokenSaleActions.receiveTokenSale(contract))
+        dispatch(FetchingActions.stop())
       } catch(error) {
         dispatch(ErrorActions.showError(error))
       }
