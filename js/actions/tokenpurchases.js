@@ -65,7 +65,17 @@ const TokenPurchaseActions = {
   },
 
   receiveTokenPurchase(tokenPurchase) {
-    return { type: ActionTypes.RECEIVE_TOKEN_PURCHASE, tokenPurchase }
+    return dispatch => {
+      dispatch({ type: ActionTypes.RECEIVE_TOKEN_PURCHASE, tokenPurchase })
+      dispatch({ type: ActionTypes.DEPLOYED_NEW_CONTRACT })
+    }
+  },
+
+  resetDeployedContract() {
+    return dispatch => {
+      dispatch({ type: ActionTypes.TOKEN_PURCHASE_RESET })
+      dispatch({ type: ActionTypes.DEPLOYED_NEW_CONTRACT_RESET })
+    }
   },
 
   async _buildContractInformation(tokenPurchase) {

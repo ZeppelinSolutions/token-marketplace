@@ -40,7 +40,7 @@ class App extends React.Component {
             <Route path="/token-purchase/:address" component={TokenPurchasePage}/>
           </Switch>
         </div>
-        <Modal open={this.state.fetching} message={'Loading...'}/>
+        <Modal open={this.state.fetching} message={'...loading...'}/>
       </div>
     )
   }

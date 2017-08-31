@@ -63,7 +63,17 @@ const TokenSaleActions = {
   },
 
   receiveTokenSale(tokenSale) {
-    return { type: ActionTypes.RECEIVE_TOKEN_SALE, tokenSale }
+    return dispatch => {
+      dispatch({ type: ActionTypes.RECEIVE_TOKEN_SALE, tokenSale })
+      dispatch({ type: ActionTypes.DEPLOYED_NEW_CONTRACT })
+    }
+  },
+
+  resetDeployedContract() {
+    return dispatch => {
+      dispatch({ type: ActionTypes.TOKEN_SALE_RESET })
+      dispatch({ type: ActionTypes.DEPLOYED_NEW_CONTRACT_RESET })
+    }
   },
 
   async _buildContractInformation(tokenSale) {

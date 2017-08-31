@@ -1,7 +1,7 @@
 import React from 'react';
 import * as ActionTypes from '../actiontypes'
 
-const initialState = { address: '', balance: 0, tokens: 0 };
+const initialState = { address: '', balance: 0, tokens: 0, deployed: false };
 
 const AccountsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -11,6 +11,10 @@ const AccountsReducer = (state = initialState, action) => {
       return Object.assign({}, state, { balance: action.balance.toString() });
     case ActionTypes.RECEIVE_TOKEN_BALANCE:
       return Object.assign({}, state, { tokens: action.tokens.toString() });
+    case ActionTypes.DEPLOYED_NEW_CONTRACT:
+      return Object.assign({}, state, { deployed: true });
+    case ActionTypes.DEPLOYED_NEW_CONTRACT_RESET:
+      return Object.assign({}, state, { deployed: false });
     default:
       return state
   }
