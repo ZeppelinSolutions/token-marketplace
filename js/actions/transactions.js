@@ -11,10 +11,10 @@ const TransactionActions = {
     return dispatch => dispatch({ type: ActionTypes.RECEIVE_LAST_TRANSACTION })
   },
 
-  addTransaction(transaction) {
+  addTransaction(transactionHash) {
     return dispatch => {
-      dispatch({ type: ActionTypes.ADD_TRANSACTION, transaction })
-      dispatch(TransactionActions.receiveTransaction(transaction))
+      dispatch({ type: ActionTypes.ADD_TRANSACTION, transactionHash })
+      dispatch(TransactionActions.getData(transactionHash))
     }
   },
 
