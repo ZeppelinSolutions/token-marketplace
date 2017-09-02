@@ -20,7 +20,6 @@ export default class BuySellForm extends React.Component {
   componentDidMount() {
     Store.subscribe(() => this._onChange());
     Store.dispatch(AccountActions.findAccount());
-    Store.dispatch(AccountActions.resetDeployedContract());
   }
 
   render() {

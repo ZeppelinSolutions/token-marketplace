@@ -1,8 +1,9 @@
 import React from 'react'
 import Store from '../store'
-import { Link } from 'react-router-dom'
+import SearchActions from '../actions/search'
+import { withRouter, Link } from 'react-router-dom'
 
-export default class Navbar extends React.Component {
+class Navbar extends React.Component {
   constructor(props){
     super(props)
     this.state = { address: '' }
@@ -32,11 +33,19 @@ export default class Navbar extends React.Component {
     e.preventDefault()
     const address = e.target.value;
     this.setState({ address: address })
-    this.props.searchContract(address)
+    if(address.length > 40) Store.dispatch(SearchActions.searchContract(address))
   }
 
   _onChange() {
     const state = Store.getState()
-    if(state.search.found) this.setState({ address: '' })
+    if(state.search.found) {
+      state.search.tokenSale ?
+        this.props.history.push(`/token-sale/${state.search.tokenSale}`) :
+        this.props.history.push(`/token-purchase/${state.search.tokenPurchase}`)
+      this.setState({ address: '' })
+      Store.dispatch(SearchActions.resetSearch())
+    }
   }
 }
+
+export default withRouter(Navbar)
