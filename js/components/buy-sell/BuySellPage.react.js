@@ -2,8 +2,8 @@ import React from 'react';
 import Store from '../../store'
 import BuySellForm from './BuySellForm.react'
 import TransactionsList from "../transactions/TransactionsList.react"
-import NewTokenSaleLink from "../token-sale/NewTokenSaleLink.react";
-import NewTokenPurchaseLink from "../token-purchase/NewTokenPurchaseLink.react";
+import NewTokenSaleLink from "../token-sale/NewTokenSaleLink.react"
+import NewTokenPurchaseLink from "../token-purchase/NewTokenPurchaseLink.react"
 
 export default class BuySellPage extends React.Component {
   constructor(props){
@@ -18,7 +18,7 @@ export default class BuySellPage extends React.Component {
   render() {
     return (
       <div ref="buySellPage" className="row">
-        {this.state.deployed ? this._renderContractLink() : <BuySellForm col="s12"/>}
+        {this.state.deployed ? this._renderContractLink() : <BuySellForm col="s12" action={this.props.match.params.action}/>}
         <TransactionsList col="s12"/>
       </div>
     );

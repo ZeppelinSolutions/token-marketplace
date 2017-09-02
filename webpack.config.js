@@ -24,13 +24,9 @@ const config = {
         use: 'json-loader'
       },
       {
-        test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        use: 'url-loader?limit=10000&mimetype=application/font-woff'
+        test: /\.(woff|woff2|eot|ttf)$/,
+        loader: 'file-loader?name=public/fonts/[name].[ext]'
       },
-      {
-        test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        use: 'file-loader'
-      }
     ]
   },
   devServer: {

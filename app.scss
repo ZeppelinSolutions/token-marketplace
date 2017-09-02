@@ -1,7 +1,7 @@
 @import "css/variables";
+@import "css/fonts";
 
 html {
-  //font-family: Roboto;
   background-color: $primary-0;
   color: $primary-2;
 }
@@ -64,4 +64,22 @@ nav {
     height: 0 !important;
     display: none;
   }
+}
+
+.buy-button {
+  margin: 0 40px 0 -10px;
+}
+
+.buy-sell-form {
+  h3 {
+    text-transform: uppercase;
+  }
+}
+
+.transactions-list {
+  margin-top: 30px;
+}
+
+.buy-sell-question {
+  margin-top: 150px !important;
 }

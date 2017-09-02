@@ -1,4 +1,5 @@
 import React from 'react'
+import Home from './Home'
 import Store from '../store'
 import Modal from './Modal.react'
 import Navbar from './Navbar.react'
@@ -32,7 +33,8 @@ class App extends React.Component {
         <div className="container">
           <div id="errors">{this.state.error ? this.state.error.message : ''}</div>
           <Switch>
-            <Route path="/" exact component={BuySellPage}/>
+            <Route path="/" exact component={Home}/>
+            <Route path="/publish/:action" exact component={BuySellPage}/>
             <Route path="/token-sale/:address" component={TokenSalePage}/>
             <Route path="/token-purchase/:address" component={TokenPurchasePage}/>
           </Switch>

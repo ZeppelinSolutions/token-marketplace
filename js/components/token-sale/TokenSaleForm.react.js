@@ -15,7 +15,6 @@ export default class TokenSaleForm extends React.Component {
   componentDidMount() {
     Store.subscribe(() => this._onChange())
     Store.dispatch(TokenSaleActions.getTokenSale(this.state.tokenSaleAddress))
-    $('.chip').material_chip();
   }
 
   render() {
@@ -52,7 +51,7 @@ export default class TokenSaleForm extends React.Component {
           </div>
           <div className="input-field row">
             <div className="col s1 offset-s10">
-              <button id="apply" disabled={tokenSale.closed} className="btn btn-primary">Apply</button>
+              <button disabled={tokenSale.closed} className="btn btn-primary">Apply</button>
             </div>
           </div>
         </form>

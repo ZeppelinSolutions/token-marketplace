@@ -15,7 +15,6 @@ export default class TokenPurchaseForm extends React.Component {
   componentDidMount() {
     Store.subscribe(() => this._onChange())
     Store.dispatch(TokenPurchaseActions.getTokenPurchase(this.state.tokenPurchaseAddress))
-    $('.chip').material_chip();
   }
 
   render() {

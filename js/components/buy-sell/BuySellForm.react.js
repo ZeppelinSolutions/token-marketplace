@@ -9,13 +9,12 @@ export default class BuySellForm extends React.Component {
   constructor(props){
     super(props)
     this.state = { account: null, ownerAddress: '', tokenAddress: '', amount: 0, price: 0 }
-    this._buy = this._buy.bind(this)
-    this._sell = this._sell.bind(this)
     this._selectERC20 = this._selectERC20.bind(this)
     this._updateToken = this._updateToken.bind(this)
     this._updateOwner = this._updateOwner.bind(this)
     this._updatePrice = this._updatePrice.bind(this)
     this._updateAmount = this._updateAmount.bind(this)
+    this._handleSubmit = this._handleSubmit.bind(this)
   }
 
   componentDidMount() {
@@ -29,8 +28,8 @@ export default class BuySellForm extends React.Component {
     const tokens = this.state.account ? this.state.account.tokens : '...'
     const balance = this.state.account ? this.state.account.balance : '...'
     return (
-      <form id="publish-contract" ref="buySellForm" className={"col " + this.props.col}>
-        <h3>Sell/Buy some tokens</h3>
+      <form ref="buySellForm" className={"buy-sell-form col " + this.props.col} onSubmit={this._handleSubmit}>
+        <h3>{this.props.action} some tokens</h3>
         <ERC20List selectERC20={this._selectERC20}/>
         <div className="row">
           <div className="input-field col s12">
@@ -51,27 +50,20 @@ export default class BuySellForm extends React.Component {
           </div>
         </div>
         <div className="input-field row">
-          <div className="col s2 offset-s8">
-            <button id="sell" className="btn btn-primary" onClick={this._sell}>Sell</button>
-          </div>
-          <div className="col s2">
-            <button id="buy" className="btn btn-secondary" onClick={this._buy}>Buy</button>
+          <div className="col s1 offset-s10">
+            <button className="btn btn-primary">Publish</button>
           </div>
         </div>
       </form>
     );
   }
 
-  _sell(e) {
+  _handleSubmit(e) {
     e.preventDefault()
     const state = this.state
-    Store.dispatch(TokenSaleActions.publish(state.tokenAddress, state.ownerAddress, state.amount, state.price))
-  }
-
-  _buy(e) {
-    e.preventDefault()
-    const state = this.state
-    Store.dispatch(TokenPurchaseActions.publish(state.tokenAddress, state.ownerAddress, state.amount, state.price))
+    const args = [state.tokenAddress, state.ownerAddress, state.amount, state.price]
+    const contract = this.props.action === 'buy' ? TokenPurchaseActions : TokenSaleActions
+    Store.dispatch(contract.publish(...args))
   }
 
   _selectERC20(erc20Address) {
