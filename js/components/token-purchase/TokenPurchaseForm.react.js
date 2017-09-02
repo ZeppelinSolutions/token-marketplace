@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import React from 'react'
 import Store from '../../store'
 import Modal from '../Modal.react'

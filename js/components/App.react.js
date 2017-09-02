@@ -6,7 +6,9 @@ import Navbar from './Navbar.react'
 import SearchActions from '../actions/search'
 import NetworkActions from '../actions/network'
 import BuySellPage from './buy-sell/BuySellPage.react'
+import NewTokenSale from "./token-sale/NewTokenSale.react"
 import TokenSalePage from './token-sale/TokenSalePage.react'
+import NewTokenPurchase from "./token-purchase/NewTokenPurchase.react"
 import TokenPurchasePage from './token-purchase/TokenPurchasePage.react'
 import { withRouter, Redirect, Switch, Route } from 'react-router-dom'
 
@@ -35,6 +37,8 @@ class App extends React.Component {
           <Switch>
             <Route path="/" exact component={Home}/>
             <Route path="/publish/:action" exact component={BuySellPage}/>
+            <Route path="/publish/buy/:address" exact component={NewTokenPurchase}/>
+            <Route path="/publish/sell/:address" exact component={NewTokenSale}/>
             <Route path="/token-sale/:address" component={TokenSalePage}/>
             <Route path="/token-purchase/:address" component={TokenPurchasePage}/>
           </Switch>

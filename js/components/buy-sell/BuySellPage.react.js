@@ -1,16 +1,10 @@
 import React from 'react';
 import Store from '../../store'
+import { withRouter } from 'react-router'
 import BuySellForm from './BuySellForm.react'
 import TransactionsList from "../transactions/TransactionsList.react"
-import NewTokenSaleLink from "../token-sale/NewTokenSaleLink.react"
-import NewTokenPurchaseLink from "../token-purchase/NewTokenPurchaseLink.react"
 
-export default class BuySellPage extends React.Component {
-  constructor(props){
-    super(props)
-    this.state = { deployed: false }
-  }
-
+class BuySellPage extends React.Component {
   componentDidMount() {
     Store.subscribe(() => this._onChange());
   }
@@ -18,22 +12,18 @@ export default class BuySellPage extends React.Component {
   render() {
     return (
       <div ref="buySellPage" className="row">
-        {this.state.deployed ? this._renderContractLink() : <BuySellForm col="s12" action={this.props.match.params.action}/>}
+        <BuySellForm col="s12" action={this.props.match.params.action}/>
         <TransactionsList col="s12"/>
       </div>
     );
   }
 
-  _renderContractLink() {
-    return this.state.tokenSale ?
-      <NewTokenSaleLink tokenSale={this.state.tokenSale} col="s12"/> :
-      <NewTokenPurchaseLink tokenPurchase={this.state.tokenPurchase} col="s12"/>
-  }
-
   _onChange() {
     if(this.refs.buySellPage) {
-      const state = Store.getState();
-      this.setState({ deployed: state.account.deployed, tokenSale: state.tokenSale, tokenPurchase: state.tokenPurchase })
+      const deployedAddress = Store.getState().account.deployedAddress;
+      if(deployedAddress) this.props.history.push(`/publish/${this.props.match.params.action}/${deployedAddress}`)
     }
   }
 }
+
+export default withRouter(BuySellPage)

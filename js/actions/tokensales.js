@@ -1,9 +1,9 @@
 import ErrorActions from './errors'
-import FetchingActions from './fetching'
 import AccountActions from './accounts'
+import FetchingActions from './fetching'
 import TransactionActions from './transactions'
 import * as ActionTypes from '../actiontypes'
-import { GAS, showError } from '../constants'
+import { GAS } from '../constants'
 import { ERC20, TokenSale } from '../contracts'
 
 const TokenSaleActions = {
@@ -33,7 +33,7 @@ const TokenSaleActions = {
         dispatch(AccountActions.updateAccount(seller, erc20Address))
         dispatch(TransactionActions.addTransaction(response.tx))
         const contract = await TokenSaleActions._buildContractInformation(tokenSale)
-        dispatch(TokenSaleActions.receiveTokenSale(contract))
+        dispatch(AccountActions.deployedNewContract(contract.address))
         dispatch(FetchingActions.stop())
       } catch (error) {
         dispatch(ErrorActions.showError(error))
@@ -63,17 +63,7 @@ const TokenSaleActions = {
   },
 
   receiveTokenSale(tokenSale) {
-    return dispatch => {
-      dispatch({ type: ActionTypes.RECEIVE_TOKEN_SALE, tokenSale })
-      dispatch({ type: ActionTypes.DEPLOYED_NEW_CONTRACT })
-    }
-  },
-
-  resetDeployedContract() {
-    return dispatch => {
-      dispatch({ type: ActionTypes.TOKEN_SALE_RESET })
-      dispatch({ type: ActionTypes.DEPLOYED_NEW_CONTRACT_RESET })
-    }
+    return { type: ActionTypes.RECEIVE_TOKEN_SALE, tokenSale }
   },
 
   async _buildContractInformation(tokenSale) {

@@ -52,6 +52,14 @@ const AccountActions = {
     return { type: ActionTypes.RECEIVE_ACCOUNT, address }
   },
 
+  deployedNewContract(address) {
+    return { type: ActionTypes.DEPLOYED_NEW_CONTRACT, address }
+  },
+
+  resetDeployedContract() {
+    return { type: ActionTypes.DEPLOYED_NEW_CONTRACT_RESET }
+  },
+
   receiveEtherBalance(balance) {
     return { type: ActionTypes.RECEIVE_ETHER_BALANCE, balance }
   },

@@ -20,8 +20,7 @@ export default class BuySellForm extends React.Component {
   componentDidMount() {
     Store.subscribe(() => this._onChange());
     Store.dispatch(AccountActions.findAccount());
-    Store.dispatch(TokenSaleActions.resetDeployedContract());
-    Store.dispatch(TokenPurchaseActions.resetDeployedContract());
+    Store.dispatch(AccountActions.resetDeployedContract());
   }
 
   render() {
@@ -93,7 +92,7 @@ export default class BuySellForm extends React.Component {
 
   _onChange() {
     const state = Store.getState();
-    if(this.refs.buySellForm && state.account !== this.state.account) {
+    if(this.refs.buySellForm) {
       this.setState({ account: state.account, ownerAddress: state.account.address });
     }
   }

@@ -1,5 +1,6 @@
 import ErrorActions from './errors'
 import AccountActions from './accounts'
+import FetchingActions from './fetching'
 import TransactionActions from './transactions'
 import * as ActionTypes from '../actiontypes'
 import { GAS } from '../constants'
@@ -32,7 +33,7 @@ const TokenPurchaseActions = {
         dispatch(TransactionActions.addTransaction(response.tx));
         dispatch(AccountActions.updateAccount(buyer, erc20Address));
         const contract = await TokenPurchaseActions._buildContractInformation(tokenPurchase)
-        dispatch(TokenPurchaseActions.receiveTokenPurchase(contract))
+        dispatch(AccountActions.deployedNewContract(contract.address))
         dispatch(FetchingActions.stop())
       } catch(error) {
         dispatch(ErrorActions.showError(error))
@@ -65,17 +66,7 @@ const TokenPurchaseActions = {
   },
 
   receiveTokenPurchase(tokenPurchase) {
-    return dispatch => {
-      dispatch({ type: ActionTypes.RECEIVE_TOKEN_PURCHASE, tokenPurchase })
-      dispatch({ type: ActionTypes.DEPLOYED_NEW_CONTRACT })
-    }
-  },
-
-  resetDeployedContract() {
-    return dispatch => {
-      dispatch({ type: ActionTypes.TOKEN_PURCHASE_RESET })
-      dispatch({ type: ActionTypes.DEPLOYED_NEW_CONTRACT_RESET })
-    }
+    return { type: ActionTypes.RECEIVE_TOKEN_PURCHASE, tokenPurchase }
   },
 
   async _buildContractInformation(tokenPurchase) {
