@@ -21,27 +21,42 @@ export default class TokenPurchaseForm extends React.Component {
     const loading = tokenPurchase === null || (typeof tokenPurchase.opened === 'undefined')
     return (
       <div ref="tokenPurchaseForm" className={"col " + this.props.col}>
-        <form onSubmit={this._handleSubmit}>
-          <div className="row valign-wrapper">
-            <div className="col s10 valign"><h3>Apply token purchase</h3></div>
-            <div className="col s2 valign">{tokenPurchase.opened ? <span className="chip green">Opened</span> : <span className="chip red">Closed</span> }</div>
+        <form className="card" onSubmit={this._handleSubmit}>
+          <div className="card-content">
+            <div className="row valign-wrapper">
+              <div className="col s10 valign"><h3 className="title">Apply token purchase</h3></div>
+              <div className="col s2 valign">{tokenPurchase.opened ? <span className="chip green">Opened</span> : <span className="chip red">Closed</span> }</div>
+            </div>
+            <div className="row">
+              <div className="input-field col s6">
+                <label className="active">Token Purchase (address)</label>
+                <p>{tokenPurchase.address}</p>
+              </div>
+              <div className="input-field col s3">
+                <label className="active">Amount (tokens)</label>
+                <p>{tokenPurchase.amount}</p>
+              </div>
+              <div className="input-field col s3">
+                <label className="active">Price (wei)</label>
+                <p>{tokenPurchase.price}</p>
+              </div>
+              <div className="input-field col s6">
+                <label className="active">Buyer (address)</label>
+                <p>{tokenPurchase.buyer}</p>
+              </div>
+              <div className="input-field col s6">
+                <label htmlFor="buyer-address">You (address)</label>
+                <input value={this.state.sellerAddress} type="text" onChange={this._updateSellerAddress} id="seller-address" required/>
+              </div>
+            </div>
           </div>
-          <div>
-            <p className="address">Address <span>{tokenPurchase.address}</span></p>
-            <p className="buyer">Buyer <span>{tokenPurchase.buyer}</span></p>
-            <p className="tokens">Tokens <span>{tokenPurchase.amount}</span></p>
-            <p className="price">Wei <span>{tokenPurchase.price}</span></p>
-            <p className="status">Status <span>{tokenPurchase.opened ? 'Opened' : 'Closed'}</span></p>
+          <div className="card-action">
+            <div className="row">
+              <div className="col s1 offset-s10">
+                <button disabled={!tokenPurchase.opened} className="btn btn-primary">Apply</button>
+              </div>
+            </div>
           </div>
-          <div className="input-field">
-            <label htmlFor="contract-address" className={tokenPurchase.address ? 'active' : ''}>Token Purchase (address)</label>
-            <input value={tokenPurchase.address} type="text" id="contract-address" disabled required/>
-          </div>
-          <div className="input-field">
-            <label htmlFor="seller-address">You (address)</label>
-            <input value={this.state.sellerAddress} type="text" onChange={this._updateSellerAddress} id="seller-address" required/>
-          </div>
-          <button id="apply" disabled={!tokenPurchase.opened} className="btn btn-primary">Apply</button>
         </form>
         <Modal open={loading} progressBar message={'...loading token purchase data...'}/>
       </div>

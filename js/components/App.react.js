@@ -31,7 +31,7 @@ export default class App extends React.Component {
     return (
       <div ref="app">
         <Navbar/>
-        <div className="container">
+        <div className="main-container container">
           <div id="errors">{this.state.error ? this.state.error.message : ''}</div>
           <Switch>
             <Route path="/" exact component={Home}/>

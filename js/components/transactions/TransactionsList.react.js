@@ -18,7 +18,7 @@ export default class TransactionsList extends React.Component {
   render() {
     return (
       <div ref="transactionsList" className={"transactions-list col " + this.props.col}>
-        <h4>Transactions List</h4>
+        <h4 className="subtitle">Transactions List</h4>
         <ul className="collapsible" data-collapsible="accordion">
           {this._buildTransactionsList()}
         </ul>

@@ -14,6 +14,10 @@ html {
   width: 60% !important;
 }
 
+.main-container {
+  padding-top: 50px;
+}
+
 nav {
   color: $primary-2;
   background-color: $primary-5 !important;
@@ -28,16 +32,6 @@ nav {
 #errors {
   background-color: #ffd6c8;
   color: darkred;
-}
-
-#transactions-list, #transaction-info {
-  background-color: $primary-1;
-  border: $primary-4 1px solid;
-  font-size: 12px;
-
-  p {
-    margin: 2px;
-  }
 }
 
 #overlay {
@@ -70,16 +64,47 @@ nav {
   margin: 0 40px 0 -10px;
 }
 
-.buy-sell-form {
-  h3 {
-    text-transform: uppercase;
-  }
+.title {
+  font-weight: 300;
+  letter-spacing: 0px;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  font-weight: 300;
+  letter-spacing: 0;
+  text-transform: uppercase;
 }
 
 .transactions-list {
-  margin-top: 30px;
+  margin-top: 40px;
 }
 
 .buy-sell-question {
   margin-top: 150px !important;
+}
+
+.congrats-card {
+
+  .card-title {
+    color: $primary-5;
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .card-content {
+    color: $primary-6;
+  }
+
+  .card-action {
+    text-align: right;
+  }
+}
+
+.input-field {
+  p {
+    padding-top: 15px !important;
+  }
 }

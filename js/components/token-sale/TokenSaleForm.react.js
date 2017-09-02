@@ -21,36 +21,40 @@ export default class TokenSaleForm extends React.Component {
     const loading = tokenSale === null || (typeof tokenSale.closed === 'undefined')
     return (
       <div ref="tokenSaleForm" className={"col " + this.props.col}>
-        <form onSubmit={this._handleSubmit}>
-          <div className="row valign-wrapper">
-            <div className="col s10 valign"><h3>Apply token sale</h3></div>
-            <div className="col s2 valign">{tokenSale.closed ? <span className="chip red">Closed</span> : <span className="chip green">Opened</span>}</div>
+        <form className="card" onSubmit={this._handleSubmit}>
+          <div className="card-content">
+            <div className="row valign-wrapper">
+              <div className="col s10 valign"><h3 className="title">Apply token sale</h3></div>
+              <div className="col s2 valign">{tokenSale.closed ? <span className="chip red">Closed</span> : <span className="chip green">Opened</span>}</div>
+            </div>
+            <div className="row">
+              <div className="input-field col s6">
+                <label className="active">Token Sale (address)</label>
+                <p>{tokenSale.address}</p>
+              </div>
+              <div className="input-field col s3">
+                <label className="active">Amount (tokens)</label>
+                <p>{tokenSale.amount}</p>
+              </div>
+              <div className="input-field col s3">
+                <label className="active">Price (wei)</label>
+                <p>{tokenSale.price}</p>
+              </div>
+              <div className="input-field col s6">
+                <label className="active">Seller (address)</label>
+                <p>{tokenSale.seller}</p>
+              </div>
+              <div className="input-field col s6">
+                <label htmlFor="buyer-address">You (address)</label>
+                <input value={this.state.buyerAddress} type="text" onChange={this._updateBuyerAddress} id="buyer-address" required/>
+              </div>
+            </div>
           </div>
-          <div className="row">
-            <div className="input-field col s6">
-              <label htmlFor="contract-address" className={tokenSale.address ? 'active' : ''}>Token Sale (address)</label>
-              <input value={tokenSale.address} type="text" id="contract-address" disabled required/>
-            </div>
-            <div className="input-field col s6">
-              <label htmlFor="seller-address" className={tokenSale.seller ? 'active' : ''}>Seller (address)</label>
-              <input value={tokenSale.seller} type="text" id="seller-address" disabled/>
-            </div>
-            <div className="input-field col s6">
-              <label htmlFor="amount" className={tokenSale.amount ? 'active' : ''}>Amount (tokens)</label>
-              <input value={tokenSale.amount} type="number" id="amount" disabled/>
-            </div>
-            <div className="input-field col s6">
-              <label htmlFor="price" className={tokenSale.price ? 'active' : ''}>Price (wei)</label>
-              <input value={tokenSale.price} type="text" id="price" disabled/>
-            </div>
-            <div className="input-field col s12">
-              <label htmlFor="buyer-address">You (address)</label>
-              <input value={this.state.buyerAddress} type="text" onChange={this._updateBuyerAddress} id="buyer-address" required/>
-            </div>
-          </div>
-          <div className="input-field row">
-            <div className="col s1 offset-s10">
-              <button disabled={tokenSale.closed} className="btn btn-primary">Apply</button>
+          <div className="card-action">
+            <div className="row">
+              <div className="col s1 offset-s10">
+                <button disabled={tokenSale.closed} className="btn btn-primary">Apply</button>
+              </div>
             </div>
           </div>
         </form>

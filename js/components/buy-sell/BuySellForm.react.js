@@ -26,8 +26,8 @@ export default class BuySellForm extends React.Component {
     const tokens = this.state.account ? this.state.account.tokens : '...'
     const balance = this.state.account ? this.state.account.balance : '...'
     return (
-      <form ref="buySellForm" className={"buy-sell-form col " + this.props.col} onSubmit={this._handleSubmit}>
-        <h3>{this.props.action} some tokens</h3>
+      <form ref="buySellForm" className={"col " + this.props.col} onSubmit={this._handleSubmit}>
+        <h3 className="title">{this.props.action} some tokens</h3>
         <ERC20List selectERC20={this._selectERC20}/>
         <div className="row">
           <div className="input-field col s12">
