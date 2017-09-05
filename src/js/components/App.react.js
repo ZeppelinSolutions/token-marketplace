@@ -43,8 +43,8 @@ export default class App extends React.Component {
           </Switch>
         </div>
         <Modal open={fetching} progressBar message={'...loading...'}/>
-        <Modal open={!connected} message={'Please access using MIST or Metamask'}/>
-        <Modal open={connected && !couldAccessAccount} message={'Please enable your account'}/>
+        <Modal dark open={!connected} message={'Please access using MIST or Metamask'}/>
+        <Modal dark open={connected && !couldAccessAccount} message={'Please enable your account'}/>
       </div>
     )
   }

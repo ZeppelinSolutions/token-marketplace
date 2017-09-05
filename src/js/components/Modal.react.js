@@ -11,8 +11,10 @@ class Modal extends React.Component {
   }
 
   render() {
+    let cssClass = this.state.open ? '' : 'hidden'
+    cssClass += this.props.dark ? ' dark' : ''
     return (
-      <div id="overlay" className={this.state.open ? '' : 'hidden'}>
+      <div id="overlay" className={cssClass}>
         <div className="content">
           <h4>{this.state.message}</h4>
           {this._renderProgressBar()}

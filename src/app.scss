@@ -72,16 +72,22 @@ nav {
 
   .content {
     width: 50%;
-    margin-top: 20%;
+    margin-top: 10%;
     margin-left: 25%;
     color: $primary-5;
     text-align: center;
+    opacity: 1 !important;
+    text-transform: uppercase;
   }
 
   &.hidden {
     width: 0 !important;
     height: 0 !important;
     display: none;
+  }
+
+  &.dark {
+    opacity: .9 !important;
   }
 }
 
