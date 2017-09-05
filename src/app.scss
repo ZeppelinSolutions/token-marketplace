@@ -1,9 +1,24 @@
 @import "css/variables";
-@import "css/fonts";
+
+@font-face {
+  font-family: 'SourceSemiBold';
+  src: url('./fonts/sans/SourceSansPro-Semibold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'SourceRegular';
+  src: url('./fonts/sans/SourceSansPro-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'SourceLight';
+  src: url('./fonts/sans/SourceSansPro-Light.ttf') format('truetype');
+}
 
 html {
   background-color: $primary-0;
   color: $primary-2;
+  font-family: 'SourceRegular', Roboto, serif !important;
 }
 
 .container .row {
