@@ -33,6 +33,8 @@ const config = {
   },
   plugins: [
     new CleanWebpackPlugin(['dist']),
+    // TODO: html webpack plugin breaks requests
+    // new HtmlWebpackPlugin({ template: './src/index.template.ejs', inject: 'body', title: 'Token Marketplace' }),
     new CopyWebpackPlugin([{ from: './src/index.html', to: "index.html" }]),
     new webpack.ProvidePlugin({ $: 'jquery', jQuery: 'jquery', 'window.$': 'jquery', 'window.jQuery': 'jquery',}),
   ]

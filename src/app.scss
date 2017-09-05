@@ -1,6 +1,11 @@
 @import "css/variables";
 
 @font-face {
+  font-family: 'SourceBold';
+  src: url('./fonts/sans/SourceSansPro-Bold.ttf') format('truetype');
+}
+
+@font-face {
   font-family: 'SourceSemiBold';
   src: url('./fonts/sans/SourceSansPro-Semibold.ttf') format('truetype');
 }
@@ -13,6 +18,11 @@
 @font-face {
   font-family: 'SourceLight';
   src: url('./fonts/sans/SourceSansPro-Light.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'SourceExtraLight';
+  src: url('./fonts/sans/SourceSansPro-ExtraLight.ttf') format('truetype');
 }
 
 html {
