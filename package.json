@@ -10,7 +10,8 @@
     "test": "truffle test",
     "console": "truffle console",
     "start": "webpack-dev-server --config webpack.dev.js --hot --history-api-fallback",
-    "build": "webpack --config webpack.prod.js"
+    "build": "webpack --config webpack.prod.js",
+    "deploy": "npm run build && firebase deploy"
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
