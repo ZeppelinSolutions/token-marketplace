@@ -58,7 +58,7 @@ export default class TokenSaleForm extends React.Component {
             </div>
           </div>
         </form>
-        <Modal open={loading} progressBar message={'...loading token sale data...'}/>
+        <Modal open={loading} progressBar message={'loading token sale data...'}/>
       </div>
     )
   }

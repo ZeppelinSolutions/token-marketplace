@@ -1,12 +1,12 @@
 import React from 'react';
 import * as ActionTypes from '../actiontypes'
 
-const FetchingReducer = (state = false, action) => {
+const FetchingReducer = (state = null, action) => {
   switch (action.type) {
     case ActionTypes.START_FETCHING:
-      return true
+      return action.message
     case ActionTypes.STOP_FETCHING:
-      return false
+      return null
     default:
       return state
   }

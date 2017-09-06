@@ -58,7 +58,7 @@ export default class TokenPurchaseForm extends React.Component {
             </div>
           </div>
         </form>
-        <Modal open={loading} progressBar message={'...loading token purchase data...'}/>
+        <Modal open={loading} progressBar message={'loading token purchase data...'}/>
       </div>
     );
   }

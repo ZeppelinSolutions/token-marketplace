@@ -1,8 +1,8 @@
 import * as ActionTypes from '../actiontypes';
 
 const FetchingActions = {
-  start() {
-    return { type: ActionTypes.START_FETCHING }
+  start(message) {
+    return { type: ActionTypes.START_FETCHING, message }
   },
 
   stop() {

@@ -119,17 +119,17 @@ p.labeled {
   left: 0;
   top: 0;
   background: black;
-  opacity: .5;
+  opacity: .7;
   margin:0 auto;
 
   .content {
     width: 50%;
-    margin-top: 10%;
+    margin-top: 70px;
     margin-left: 25%;
     color: $primary-2;
     text-align: center;
     opacity: 1 !important;
-    text-transform: uppercase;
+    text-transform: lowercase;
   }
 
   &.hidden {
@@ -188,6 +188,8 @@ p.labeled {
     cursor: pointer;
     text-align: center;
     margin: 0 15px !important;
+    position: static !important;
+    z-index: 9999 !important;
     color: white !important;
     background-color: #FF5252 !important;
   }

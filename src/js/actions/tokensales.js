@@ -23,12 +23,13 @@ const TokenSaleActions = {
   publish(erc20Address, seller, amount, price) {
     return async function(dispatch) {
       console.log(`Selling ${amount} tokens at ${erc20Address} from ${seller} by Wei ${price}`)
-      dispatch(FetchingActions.start())
+      dispatch(FetchingActions.start('creating your token sale contract'))
       try {
         const erc20 = await ERC20.at(erc20Address)
         const tokenSale = await TokenSale.new(erc20Address, price, {from: seller, gas: GAS})
         dispatch(TransactionActions.addTransaction(tokenSale.transactionHash))
 
+        dispatch(FetchingActions.start('sending tokens to your token sale contract'))
         const response = await erc20.transfer(tokenSale.address, amount, {from: seller, gas: GAS})
         dispatch(AccountActions.updateAccount(seller, erc20Address))
         dispatch(TransactionActions.addTransaction(response.tx))
@@ -43,7 +44,7 @@ const TokenSaleActions = {
 
   apply(tokenSaleAddress, buyer) {
     return async function(dispatch) {
-      dispatch(FetchingActions.start())
+      dispatch(FetchingActions.start('applying token sale contract'))
       try {
         const tokenSale = await TokenSale.at(tokenSaleAddress)
         const erc20Address = await tokenSale.token()

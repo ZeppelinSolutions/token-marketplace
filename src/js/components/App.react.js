@@ -26,7 +26,7 @@ export default class App extends React.Component {
   render() {
     const connected = this.state.connected
     const couldAccessAccount = this.state.couldAccessAccount
-    const fetching = connected && couldAccessAccount && this.state.fetching
+    const fetching = connected && couldAccessAccount && this.state.fetching !== null
 
     return (
       <div ref="app">
@@ -42,7 +42,7 @@ export default class App extends React.Component {
             <Route path="/token-purchase/:address" component={TokenPurchasePage}/>
           </Switch>
         </div>
-        <Modal open={fetching} progressBar message={'...loading...'}/>
+        <Modal open={fetching} progressBar message={this.state.fetching}/>
         <Modal dark open={!connected} message={'Please access using MIST or Metamask'}/>
         <Modal dark open={connected && !couldAccessAccount} message={'Please enable your account'}/>
       </div>
