@@ -8,7 +8,7 @@ import TokenPurchaseActions from '../../actions/tokenpurchases'
 export default class BuySellForm extends React.Component {
   constructor(props){
     super(props)
-    this.state = { account: null, ownerAddress: '', tokenAddress: '', amount: 0, price: 0 }
+    this.state = { account: {}, ownerAddress: '', tokenAddress: '', amount: 0, price: 0 }
     this._selectERC20 = this._selectERC20.bind(this)
     this._updateToken = this._updateToken.bind(this)
     this._updateOwner = this._updateOwner.bind(this)
@@ -23,37 +23,50 @@ export default class BuySellForm extends React.Component {
   }
 
   render() {
-    const tokens = this.state.account ? this.state.account.tokens : '...'
-    const balance = this.state.account ? this.state.account.balance : '...'
+    const tokens = this.state.account.tokens
+    const balance = this.state.account.balance || '...'
     return (
-      <form ref="buySellForm" className={"col " + this.props.col} onSubmit={this._handleSubmit}>
-        <h3 className="title">{this.props.action} some tokens</h3>
-        <ERC20List selectERC20={this._selectERC20}/>
-        <div className="row">
-          <div className="input-field col s12">
-            <label className={this.state.tokenAddress ? 'active' : ''} htmlFor="token-address">Token (address)</label>
-            <input onChange={this._updateToken} type="text" value={this.state.tokenAddress} id="token-address" required/>
+      <div ref="buySellForm" className={"col " + this.props.col}>
+        <form className="card" onSubmit={this._handleSubmit}>
+          <div className="card-content">
+            <h3 className="title">{this.props.action} some tokens</h3>
+            <p>Please select the token you want to {this.props.action}</p>
+            <ERC20List selectERC20={this._selectERC20}/>
+            <div className="row">
+              <div className="input-field col s5">
+                <label className={this.state.tokenAddress ? 'active' : ''} htmlFor="token-address">Token (address)</label>
+                <input onChange={this._updateToken} type="text" value={this.state.tokenAddress} id="token-address" required/>
+              </div>
+              <div className="input-field col s3">
+                <label htmlFor="amount">Amount (tokens)</label>
+                <input onChange={this._updateAmount} type="number" id="amount" required/>
+              </div>
+              <div className="input-field col s4">
+                { tokens ? <p className="balance-notification">Your balance: { tokens }</p> : '' }
+              </div>
+              <div className="input-field col s5">
+                <label className={this.state.ownerAddress ? 'active' : ''} htmlFor="owner-address">You (address)</label>
+                <input onChange={this._updateOwner} type="text" value={this.state.ownerAddress} id="owner-address" disabled required/>
+              </div>
+              <div className="input-field col s3">
+                <label htmlFor="price">Price (wei)</label>
+                <input onChange={this._updatePrice} type="number" id="price" required/>
+              </div>
+              <div className="input-field col s4">
+                <p className="balance-notification">Your balance: { balance }</p>
+              </div>
+            </div>
           </div>
-          <div className="input-field col s12">
-            <label className={this.state.ownerAddress ? 'active' : ''} htmlFor="owner-address">You (address)</label>
-            <input onChange={this._updateOwner} type="text" value={this.state.ownerAddress} id="owner-address" disabled required/>
+          <div className="card-action">
+            <div className="input-field row">
+              <div className="col s1 offset-s10">
+                <button className="btn btn-primary">Publish</button>
+              </div>
+            </div>
           </div>
-          <div className="input-field col s6">
-            <label htmlFor="amount">Amount of tokens ({tokens} available)</label>
-            <input onChange={this._updateAmount} type="number" id="amount" required/>
-          </div>
-          <div className="input-field col s6">
-            <label htmlFor="price">Price in wei ({balance} available)</label>
-            <input onChange={this._updatePrice} type="number" id="price" required/>
-          </div>
-        </div>
-        <div className="input-field row">
-          <div className="col s1 offset-s10">
-            <button className="btn btn-primary">Publish</button>
-          </div>
-        </div>
-      </form>
-    );
+        </form>
+      </div>
+    )
   }
 
   _handleSubmit(e) {

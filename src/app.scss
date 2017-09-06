@@ -27,7 +27,6 @@
 
 html {
   background-color: $primary-0;
-  color: $primary-2;
   font-family: 'SourceRegular', Roboto, serif !important;
 }
 
@@ -43,9 +42,31 @@ html {
   padding-top: 50px;
 }
 
+.opened-chip {
+  color: white !important;
+  background-color: $green !important;
+}
+
+.closed-chip {
+  color: white !important;
+  background-color: $red !important;
+}
+
+.material-tooltip {
+  margin-top: -10px;
+
+  span {
+    color: $primary-3;
+  }
+
+  .backdrop {
+    background-color: $primary-0 !important;
+  }
+}
+
 nav {
-  color: $primary-2;
-  background-color: $primary-5 !important;
+  color: $primary-1;
+  background-color: $primary-2 !important;
 
   .search-contract {
     width: 350px !important;
@@ -54,10 +75,41 @@ nav {
   }
 }
 
+.btn {
+  background-color: $primary-3 !important;
+}
+
+.super-title {
+  font-family: SourceRegular;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: $primary-5;
+}
+
+.title {
+  font-family: SourceExtraLight;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: $primary-2;
+}
+
+.subtitle {
+  font-family: SourceExtraLight;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: $primary-5;
+}
+
+p.labeled {
+  padding-top: 15px !important;
+}
+
 #errors {
   background-color: #ffd6c8;
   color: darkred;
 }
+
+//########## MODAL #############
 
 #overlay {
   position: fixed;
@@ -74,7 +126,7 @@ nav {
     width: 50%;
     margin-top: 10%;
     margin-left: 25%;
-    color: $primary-5;
+    color: $primary-2;
     text-align: center;
     opacity: 1 !important;
     text-transform: uppercase;
@@ -91,42 +143,35 @@ nav {
   }
 }
 
-.buy-button {
-  margin: 0 40px 0 -10px;
-}
-
-.title {
-  font-weight: 300;
-  letter-spacing: 0px;
-  text-transform: uppercase;
-}
-
-.subtitle {
-  font-weight: 300;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
-.transactions-list {
-  margin-top: 40px;
-}
+//########## HOME #############
 
 .buy-sell-question {
   margin-top: 150px !important;
 }
 
-.congrats-card {
+.buy-button {
+  margin: 0 40px 0 -10px;
+}
 
+//########## TRANSACTIONS #############
+
+.transactions-list {
+  margin-top: 40px;
+}
+
+//########## NEW CONTRACT #############
+
+.congrats-card {
   .card-title {
-    color: $primary-5;
+    color: $primary-2;
     font-size: 14px;
-    font-weight: 300;
+    font-family: SourceExtraLight;
     letter-spacing: 0;
     text-transform: uppercase;
   }
 
   .card-content {
-    color: $primary-6;
+    color: $primary-5;
   }
 
   .card-action {
@@ -134,8 +179,28 @@ nav {
   }
 }
 
-.input-field {
-  p {
-    padding-top: 15px !important;
+//########## BUY/SELL #############
+
+.erc20-list {
+  margin: 20px !important;
+
+  .option {
+    cursor: pointer;
+    text-align: center;
+    margin: 0 15px !important;
+    color: white !important;
+    background-color: #FF5252 !important;
   }
+}
+
+.balance-notification {
+  padding: 5px 20px;
+  margin-top: 5px !important;
+  position: relative;
+  color: #f3f3fd !important;
+  font-size: 13px !important;
+  background-color: $primary-5;
+  border-radius: 20px;
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
 }

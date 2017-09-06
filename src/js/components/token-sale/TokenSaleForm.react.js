@@ -25,24 +25,24 @@ export default class TokenSaleForm extends React.Component {
           <div className="card-content">
             <div className="row valign-wrapper">
               <div className="col s10 valign"><h3 className="title">Apply token sale</h3></div>
-              <div className="col s2 valign">{tokenSale.closed ? <span className="chip red">Closed</span> : <span className="chip green">Opened</span>}</div>
+              <div className="col s2 valign">{tokenSale.closed ? <span className="chip closed-chip">Closed</span> : <span className="chip opened-chip">Opened</span>}</div>
             </div>
             <div className="row">
               <div className="input-field col s6">
                 <label className="active">Token Sale (address)</label>
-                <p>{tokenSale.address}</p>
+                <p className="labeled">{tokenSale.address}</p>
               </div>
               <div className="input-field col s3">
                 <label className="active">Amount (tokens)</label>
-                <p>{tokenSale.amount}</p>
+                <p className="labeled">{tokenSale.amount}</p>
               </div>
               <div className="input-field col s3">
                 <label className="active">Price (wei)</label>
-                <p>{tokenSale.price}</p>
+                <p className="labeled">{tokenSale.price}</p>
               </div>
               <div className="input-field col s6">
                 <label className="active">Seller (address)</label>
-                <p>{tokenSale.seller}</p>
+                <p className="labeled">{tokenSale.seller}</p>
               </div>
               <div className="input-field col s6">
                 <label htmlFor="buyer-address">You (address)</label>

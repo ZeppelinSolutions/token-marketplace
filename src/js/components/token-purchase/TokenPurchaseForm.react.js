@@ -25,24 +25,24 @@ export default class TokenPurchaseForm extends React.Component {
           <div className="card-content">
             <div className="row valign-wrapper">
               <div className="col s10 valign"><h3 className="title">Apply token purchase</h3></div>
-              <div className="col s2 valign">{tokenPurchase.opened ? <span className="chip green">Opened</span> : <span className="chip red">Closed</span> }</div>
+              <div className="col s2 valign">{tokenPurchase.opened ? <span className="chip opened-chip">Opened</span> : <span className="chip closed-chip">Closed</span> }</div>
             </div>
             <div className="row">
               <div className="input-field col s6">
                 <label className="active">Token Purchase (address)</label>
-                <p>{tokenPurchase.address}</p>
+                <p className="labeled">{tokenPurchase.address}</p>
               </div>
               <div className="input-field col s3">
                 <label className="active">Amount (tokens)</label>
-                <p>{tokenPurchase.amount}</p>
+                <p className="labeled">{tokenPurchase.amount}</p>
               </div>
               <div className="input-field col s3">
                 <label className="active">Price (wei)</label>
-                <p>{tokenPurchase.price}</p>
+                <p className="labeled">{tokenPurchase.price}</p>
               </div>
               <div className="input-field col s6">
                 <label className="active">Buyer (address)</label>
-                <p>{tokenPurchase.buyer}</p>
+                <p className="labeled">{tokenPurchase.buyer}</p>
               </div>
               <div className="input-field col s6">
                 <label htmlFor="buyer-address">You (address)</label>
