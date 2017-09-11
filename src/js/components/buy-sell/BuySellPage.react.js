@@ -3,6 +3,7 @@ import Store from '../../store'
 import { withRouter } from 'react-router'
 import BuySellForm from './BuySellForm.react'
 import TransactionsList from "../transactions/TransactionsList.react"
+import AccountActions from "../../actions/accounts";
 
 class BuySellPage extends React.Component {
   componentDidMount() {
@@ -21,7 +22,10 @@ class BuySellPage extends React.Component {
   _onChange() {
     if(this.refs.buySellPage) {
       const deployedAddress = Store.getState().account.deployedAddress;
-      if(deployedAddress) this.props.history.push(`/publish/${this.props.match.params.action}/${deployedAddress}`)
+      if(deployedAddress) {
+        this.props.history.push(`/publish/${this.props.match.params.action}/${deployedAddress}`)
+        Store.dispatch(AccountActions.resetDeployedContract())
+      }
     }
   }
 }
