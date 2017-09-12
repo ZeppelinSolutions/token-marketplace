@@ -5,45 +5,54 @@ import TokenSaleActions from '../../actions/tokensales'
 export default class TokenSaleFulfill extends React.Component {
   constructor(props){
     super(props)
-    this.state = { fulfiller: this.props.fulfiller, tokenSale: this.props.tokenSale }
+    this.state = { fulfiller: this.props.fulfiller, tokenSale: this.props.tokenSale, loading: this.props.loading }
     this._handleSubmit = this._handleSubmit.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ tokenSale: nextProps.tokenSale, fulfiller: nextProps.fulfiller })
+    this.setState({ fulfiller: nextProps.fulfiller, tokenSale: nextProps.tokenSale, loading: nextProps.loading })
   }
 
   render() {
-    const fulfiller = this.state.fulfiller
-    const tokenSale = this.state.tokenSale
-    const closed = tokenSale.closed
-    const notEnoughEther = fulfiller.balance < tokenSale.balance
     return (
       <div ref="tokenSaleFulfill" className={"col " + this.props.col}>
         <form className="card" onSubmit={this._handleSubmit}>
           <div className="card-content">
             <h3 className="title">Fulfill contract</h3>
-            <div className="row">{this._buildFulfillDescription(closed, notEnoughEther)}</div>
+            <div className="row">{this._buildFulfillDescription()}</div>
           </div>
           <div className="card-action">
-            <button disabled={closed || notEnoughEther} className="btn btn-primary">Fulfill</button>
+            <button disabled={this._canBeFulfilled()} className="btn btn-primary">Fulfill</button>
           </div>
         </form>
       </div>
     );
   }
 
-  _buildFulfillDescription(closed, notEnoughEther) {
+  _buildFulfillDescription() {
     const fulfiller = this.state.fulfiller;
-    if(closed) return <div className="col s12"><p>You cannot fulfilled this token sale contract since it is already closed.</p></div>
-    return notEnoughEther ?
-      <div className="col s12">
-        <p>You don't have enough ether balance in your account ({fulfiller.address}) to fulfill this contract.</p>
-      </div> :
+    if(this._isSaleClosed())
+      return <div className="col s12"><p>You cannot fulfilled this token sale contract since it is already closed.</p></div>
+    if(this._notEnoughEther())
+      return <div className="col s12"><p>You don't have enough ether balance in your account ({fulfiller.address}) to fulfill this contract.</p></div>
+    return (
       <div className="col s12">
         <p>If you fulfill this token sale contract, then one transaction will be performed:</p>
         <p>You will be requested to sign an ether transaction from your account ({fulfiller.address}) to the token sale contract, in order to receive the given amount of tokens in return.</p>
       </div>
+    )
+  }
+
+  _canBeFulfilled() {
+    return this._isSaleClosed() || this._notEnoughEther()
+  }
+
+  _notEnoughEther() {
+    return this.state.fulfiller.balance < this.state.tokenSale.balance
+  }
+
+  _isSaleClosed() {
+    return this.state.tokenSale.closed
   }
 
   _handleSubmit(e) {

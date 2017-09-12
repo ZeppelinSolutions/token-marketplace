@@ -38,22 +38,22 @@ class NewTokenPurchase extends React.Component {
                   <label className={this.state.token? 'active' : ''} htmlFor="token">Token</label>
                   <input onChange={this._updateToken} type="text" value={this.state.token} id="token" required/>
                 </div>
-                <div className="input-field col s3">
+                <div className="input-field col s4">
                   <label htmlFor="amount">Amount of tokens you want to buy</label>
                   <input onChange={this._updateAmount} type="number" id="amount" required/>
                 </div>
-                <div className="input-field col s4">
+                <div className="input-field col s3">
                   { tokens ? <p className="balance-notification">MTK balance: { tokens }</p> : '' }
                 </div>
                 <div className="input-field col s5">
                   <label className={this.state.owner? 'active' : ''} htmlFor="owner">Your account</label>
                   <input onChange={this._updateOwner} type="text" value={this.state.owner} id="owner" disabled required/>
                 </div>
-                <div className="input-field col s3">
-                  <label htmlFor="price">Price you are willing to pay per token</label>
+                <div className="input-field col s4">
+                  <label htmlFor="price">Price you are willing to pay for total amount in WEI</label>
                   <input onChange={this._updatePrice} type="number" id="price" required/>
                 </div>
-                <div className="input-field col s4">
+                <div className="input-field col s3">
                   <p className="balance-notification">ETH balance: { balance }</p>
                 </div>
               </div>

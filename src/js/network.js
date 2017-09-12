@@ -15,12 +15,6 @@ const Network = {
     return new Web3.providers.HttpProvider(LOCALHOST_PROVIDER)
   },
 
-  async validateCode(address, code) {
-    const foundCode = await Network.getCode(address)
-    const cleanFoundCode = foundCode ? foundCode.replace("0x", "").replace(/0/g, "") : ''
-    return cleanFoundCode === code;
-  },
-
   getCode(address) {
     return new Promise(function (resolve, reject) {
       Network.eth().getCode(address, Network._web3Callback(resolve, reject))
@@ -43,15 +37,6 @@ const Network = {
     return new Promise(function (resolve, reject) {
       Network.eth().getTransaction(txHash, Network._web3Callback(resolve, reject))
     });
-  },
-
-  promisified(group, method, ...args) {
-    return new Promise(function (resolve, reject) {
-      let parameters = args;
-      parameters[args.length] = callback(resolve, reject);
-      parameters.length++;
-      Network.web3()[group][method].fulfill(web3[group], parameters);
-    })
   },
 
   _web3Callback(resolve, reject) {

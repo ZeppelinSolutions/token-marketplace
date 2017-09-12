@@ -36,7 +36,7 @@ export default class TokenSaleDetails extends React.Component {
                 <p className="labeled">{tokenSale.amount}</p>
               </div>
               <div className="input-field col s3">
-                <label className="active">Ether you are willing to pay</label>
+                <label className="active">Wei you are willing to pay</label>
                 <p className="labeled">{tokenSale.price}</p>
               </div>
               <div className="input-field col s3">
@@ -55,7 +55,7 @@ export default class TokenSaleDetails extends React.Component {
               </div>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
     );
   }

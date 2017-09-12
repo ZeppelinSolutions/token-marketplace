@@ -18,7 +18,7 @@ const AccountActions = {
   },
 
   findAccountFor(erc20Address) {
-    return async function(dispatch) {
+    return dispatch => {
       dispatch(AccountActions.findAccount())
       dispatch(AccountActions.updateAccountBalance(erc20Address))
     }
@@ -26,10 +26,14 @@ const AccountActions = {
 
   updateAccountBalance(erc20Address) {
     return async function(dispatch) {
-      const addresses = await Network.getAccounts()
-      const mainAddress = addresses[0]
-      dispatch(AccountActions.getEtherBalance(mainAddress))
-      dispatch(AccountActions.getTokenBalance(mainAddress, erc20Address))
+      try {
+        const addresses = await Network.getAccounts()
+        const mainAddress = addresses[0]
+        dispatch(AccountActions.getEtherBalance(mainAddress))
+        dispatch(AccountActions.getTokenBalance(mainAddress, erc20Address))
+      } catch(error) {
+        dispatch(ErrorActions.showError(error))
+      }
     }
   },
 
@@ -69,11 +73,12 @@ const AccountActions = {
   },
 
   receiveEtherBalance(balance) {
-    return { type: ActionTypes.RECEIVE_ETHER_BALANCE, balance }
+    const etherBalance = Network.web3().fromWei(balance, 'ether').toString()
+    return { type: ActionTypes.RECEIVE_ETHER_BALANCE, balance: etherBalance }
   },
 
   receiveTokenBalance(tokens) {
-    return { type: ActionTypes.RECEIVE_TOKEN_BALANCE, tokens }
+    return { type: ActionTypes.RECEIVE_TOKEN_BALANCE, tokens: tokens.toString() }
   }
 }
 

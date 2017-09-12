@@ -10,42 +10,51 @@ export default class TokenPurchaseFulfill extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ tokenPurchase: nextProps.tokenPurchase, fulfiller: nextProps.fulfiller })
+    this.setState({ fulfiller: nextProps.fulfiller, tokenPurchase: nextProps.tokenPurchase })
   }
 
   render() {
-    const fulfiller = this.state.fulfiller
-    const tokenPurchase = this.state.tokenPurchase
-    const closed = !tokenPurchase.opened
-    const notEnoughTokens = fulfiller.tokens < tokenPurchase.amount
     return (
       <div ref="tokenPurchaseFulfill" className={"col " + this.props.col}>
         <form className="card" onSubmit={this._handleSubmit}>
           <div className="card-content">
             <h3 className="title">Fulfill contract</h3>
-            <div className="row">{this._buildFulfillDescription(closed, notEnoughTokens)}</div>
+            <div className="row">{this._buildFulfillDescription()}</div>
           </div>
           <div className="card-action">
-            <button disabled={closed || notEnoughTokens} className="btn btn-primary">Fulfill</button>
+            <button disabled={this._canBeFulfilled()} className="btn btn-primary">Fulfill</button>
           </div>
         </form>
       </div>
     );
   }
 
-  _buildFulfillDescription(closed, notEnoughTokens) {
+  _buildFulfillDescription() {
     const fulfiller = this.state.fulfiller;
     const tokenPurchase = this.state.tokenPurchase;
-    if(closed) return <div className="col s12"><p>You cannot fulfilled this token purchase contract since it is already closed.</p></div>
-    return notEnoughTokens ?
-      <div className="col s12">
-        <p>You don't have enough {tokenPurchase.tokenSymbol} balance in your account ({fulfiller.address}) to fulfill this contract.</p>
-      </div> :
+    if(this._isPurchaseClosed())
+      return <div className="col s12"><p>You cannot fulfilled this token purchase contract since it is already closed.</p></div>
+    if(this._notEnoughTokens())
+      return <div className="col s12"><p>You don't have enough {tokenPurchase.tokenSymbol} balance in your account ({fulfiller.address}) to fulfill this contract.</p></div>
+    return (
       <div className="col s12">
         <p>If you fulfill this token purchase contract, then two transactions will be performed:</p>
         <p>1. Firstly, you will be requested to sign a token approval to the token purchase contract.</p>
         <p>2. Then, you will claim the ether balance of the token purchase contract to be transfer to your account ({fulfiller.address}).</p>
       </div>
+    )
+  }
+
+  _canBeFulfilled() {
+    return this._isPurchaseClosed() || this._notEnoughTokens()
+  }
+
+  _notEnoughTokens() {
+    return this.state.fulfiller.tokens < this.state.tokenPurchase.amount
+  }
+
+  _isPurchaseClosed() {
+    return !this.state.tokenPurchase.opened
   }
 
   _handleSubmit(e) {
