@@ -4,13 +4,7 @@ import * as ActionTypes from '../actiontypes'
 const TokenSalesReducer = (state = {}, action) => {
   switch (action.type) {
     case ActionTypes.RECEIVE_TOKEN_SALE:
-      return Object.assign({}, state, {
-        address: action.tokenSale.address,
-        seller: action.tokenSale.seller,
-        amount: action.tokenSale.amount.toString(),
-        price: action.tokenSale.price.toString(),
-        closed: action.tokenSale.closed,
-      })
+      return Object.assign({}, state, action.tokenSale)
     default:
       return state
   }

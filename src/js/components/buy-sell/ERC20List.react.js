@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class DeployContractForm extends React.Component {
+export default class ERC20List extends React.Component {
   constructor(props){
     super(props)
     this.selectERC20 = this.selectERC20.bind(this)

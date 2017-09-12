@@ -5,9 +5,7 @@ import Modal from './Modal.react'
 import Navbar from './Navbar.react'
 import NetworkActions from '../actions/network'
 import BuySellPage from './buy-sell/BuySellPage.react'
-import NewTokenSale from "./token-sale/NewTokenSale.react"
 import TokenSalePage from './token-sale/TokenSalePage.react'
-import NewTokenPurchase from "./token-purchase/NewTokenPurchase.react"
 import TokenPurchasePage from './token-purchase/TokenPurchasePage.react'
 import { Switch, Route } from 'react-router-dom'
 
@@ -35,16 +33,14 @@ export default class App extends React.Component {
           <div id="errors">{this.state.error ? this.state.error.message : ''}</div>
           <Switch>
             <Route path="/" exact component={Home}/>
-            <Route path="/publish/:action" exact component={BuySellPage}/>
-            <Route path="/publish/buy/:address" exact component={NewTokenPurchase}/>
-            <Route path="/publish/sell/:address" exact component={NewTokenSale}/>
+            <Route path="/:action" exact component={BuySellPage}/>
             <Route path="/token-sale/:address" component={TokenSalePage}/>
             <Route path="/token-purchase/:address" component={TokenPurchasePage}/>
           </Switch>
         </div>
         <Modal open={fetching} progressBar message={this.state.fetching}/>
-        <Modal dark open={!connected} message={'Please access using MIST or Metamask'}/>
-        <Modal dark open={connected && !couldAccessAccount} message={'Please enable your account'}/>
+        <Modal dark open={!connected} message={'Please access using MetaMask'}/>
+        <Modal dark open={connected && !couldAccessAccount} message={'Please unlock your account on MetaMask'}/>
       </div>
     )
   }

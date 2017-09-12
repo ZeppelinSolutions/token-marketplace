@@ -42,7 +42,7 @@ html {
   padding-top: 50px;
 }
 
-.opened-chip {
+.open-chip {
   color: white !important;
   background-color: $green !important;
 }
@@ -73,6 +73,11 @@ nav {
     font-size: 14px !important;
     text-align: right !important;
   }
+
+  .brand-logo {
+    font-family: SourceLight;
+    text-transform: uppercase;
+  }
 }
 
 .btn {
@@ -93,15 +98,14 @@ nav {
   color: $primary-2;
 }
 
-.subtitle {
-  font-family: SourceExtraLight;
-  letter-spacing: 0;
-  text-transform: uppercase;
-  color: $primary-5;
+.card {
+  .card-action {
+    text-align: right;
+  }
 }
 
 p.labeled {
-  padding-top: 15px !important;
+  padding: 4px 0 6px !important;
 }
 
 #errors {
@@ -129,7 +133,6 @@ p.labeled {
     color: $primary-2;
     text-align: center;
     opacity: 1 !important;
-    text-transform: lowercase;
   }
 
   &.hidden {
@@ -143,7 +146,7 @@ p.labeled {
   }
 }
 
-//########## HOME #############
+//########## CUSTOM #############
 
 .buy-sell-question {
   margin-top: 150px !important;
@@ -152,34 +155,6 @@ p.labeled {
 .buy-button {
   margin: 0 40px 0 -10px;
 }
-
-//########## TRANSACTIONS #############
-
-.transactions-list {
-  margin-top: 40px;
-}
-
-//########## NEW CONTRACT #############
-
-.congrats-card {
-  .card-title {
-    color: $primary-2;
-    font-size: 14px;
-    font-family: SourceExtraLight;
-    letter-spacing: 0;
-    text-transform: uppercase;
-  }
-
-  .card-content {
-    color: $primary-5;
-  }
-
-  .card-action {
-    text-align: right;
-  }
-}
-
-//########## BUY/SELL #############
 
 .erc20-list {
   margin: 20px !important;

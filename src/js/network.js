@@ -50,7 +50,7 @@ const Network = {
       let parameters = args;
       parameters[args.length] = callback(resolve, reject);
       parameters.length++;
-      Network.web3()[group][method].apply(web3[group], parameters);
+      Network.web3()[group][method].fulfill(web3[group], parameters);
     })
   },
 

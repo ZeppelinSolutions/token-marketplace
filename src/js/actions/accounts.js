@@ -11,17 +11,25 @@ const AccountActions = {
         const mainAddress = addresses[0]
         dispatch(AccountActions.receiveAccount(mainAddress))
         dispatch(AccountActions.getEtherBalance(mainAddress))
-
       } catch(error) {
         dispatch(ErrorActions.showError(error))
       }
     }
   },
 
-  updateAccount(address, erc20Address) {
-    return dispatch => {
-      dispatch(AccountActions.getEtherBalance(address))
-      dispatch(AccountActions.getTokenBalance(address, erc20Address))
+  findAccountFor(erc20Address) {
+    return async function(dispatch) {
+      dispatch(AccountActions.findAccount())
+      dispatch(AccountActions.updateAccountBalance(erc20Address))
+    }
+  },
+
+  updateAccountBalance(erc20Address) {
+    return async function(dispatch) {
+      const addresses = await Network.getAccounts()
+      const mainAddress = addresses[0]
+      dispatch(AccountActions.getEtherBalance(mainAddress))
+      dispatch(AccountActions.getTokenBalance(mainAddress, erc20Address))
     }
   },
 

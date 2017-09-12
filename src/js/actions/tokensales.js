@@ -1,7 +1,6 @@
 import ErrorActions from './errors'
 import AccountActions from './accounts'
 import FetchingActions from './fetching'
-import TransactionActions from './transactions'
 import * as ActionTypes from '../actiontypes'
 import { GAS } from '../constants'
 import { ERC20, TokenSale } from '../contracts'
@@ -12,29 +11,23 @@ const TokenSaleActions = {
     return async function(dispatch) {
       try {
         const tokenSale = await TokenSale.at(tokenSaleAddress)
-        const contract = await TokenSaleActions._buildContractInformation(tokenSale)
-        dispatch(TokenSaleActions.receiveTokenSale(contract))
+        dispatch(TokenSaleActions.receiveTokenSale(tokenSale))
       } catch(error) {
         dispatch(ErrorActions.showError(error))
       }
     }
   },
 
-  publish(erc20Address, seller, amount, price) {
+  create(erc20Address, seller, amount, price) {
     return async function(dispatch) {
-      console.log(`Selling ${amount} tokens at ${erc20Address} from ${seller} by Wei ${price}`)
       dispatch(FetchingActions.start('creating your token sale contract'))
       try {
         const erc20 = await ERC20.at(erc20Address)
         const tokenSale = await TokenSale.new(erc20Address, price, {from: seller, gas: GAS})
-        dispatch(TransactionActions.addTransaction(tokenSale.transactionHash))
-
         dispatch(FetchingActions.start('sending tokens to your token sale contract'))
-        const response = await erc20.transfer(tokenSale.address, amount, {from: seller, gas: GAS})
-        dispatch(AccountActions.updateAccount(seller, erc20Address))
-        dispatch(TransactionActions.addTransaction(response.tx))
-        const contract = await TokenSaleActions._buildContractInformation(tokenSale)
-        dispatch(AccountActions.deployedNewContract(contract.address))
+        await erc20.transfer(tokenSale.address, amount, {from: seller, gas: GAS})
+        dispatch(AccountActions.updateAccountBalance(erc20Address))
+        dispatch(AccountActions.deployedNewContract(tokenSale.address))
         dispatch(FetchingActions.stop())
       } catch (error) {
         dispatch(ErrorActions.showError(error))
@@ -42,20 +35,16 @@ const TokenSaleActions = {
     }
   },
 
-  apply(tokenSaleAddress, buyer) {
+  fulfill(tokenSaleAddress, buyer) {
     return async function(dispatch) {
-      dispatch(FetchingActions.start('applying token sale contract'))
+      dispatch(FetchingActions.start('fulfilling token sale contract'))
       try {
         const tokenSale = await TokenSale.at(tokenSaleAddress)
         const erc20Address = await tokenSale.token()
         const price = await tokenSale.priceInWei()
-
-        console.log(`Buying tokens from ${buyer} by Wei ${price}`)
-        const response = await tokenSale.sendTransaction({from: buyer, value: price})
-        dispatch(TransactionActions.addTransaction(response.tx))
-        dispatch(AccountActions.updateAccount(buyer, erc20Address))
-        const contract = await TokenSaleActions._buildContractInformation(tokenSale)
-        dispatch(TokenSaleActions.receiveTokenSale(contract))
+        await tokenSale.sendTransaction({from: buyer, value: price})
+        dispatch(AccountActions.updateAccountBalance(erc20Address))
+        dispatch(TokenSaleActions.receiveTokenSale(tokenSale))
         dispatch(FetchingActions.stop())
       } catch(error) {
         dispatch(ErrorActions.showError(error))
@@ -64,18 +53,26 @@ const TokenSaleActions = {
   },
 
   receiveTokenSale(tokenSale) {
-    return { type: ActionTypes.RECEIVE_TOKEN_SALE, tokenSale }
-  },
-
-  async _buildContractInformation(tokenSale) {
-    return {
-      address: tokenSale.address,
-      seller: await tokenSale.owner(),
-      amount: await tokenSale.amount(),
-      price: await tokenSale.priceInWei(),
-      closed: await tokenSale.closed(),
+    return async function(dispatch) {
+      try {
+        const erc20Address = await tokenSale.token()
+        const erc20 = await ERC20.at(erc20Address)
+        const tokenSaleInformation = {
+          tokenName: erc20.name,
+          tokenSymbol: erc20.symbol,
+          address: tokenSale.address,
+          seller: await tokenSale.owner(),
+          closed: await tokenSale.closed(),
+          amount: (await tokenSale.amount()).toString(),
+          price: (await tokenSale.priceInWei()).toString(),
+          tokenAddress: await tokenSale.token(),
+        }
+        dispatch({ type: ActionTypes.RECEIVE_TOKEN_SALE, tokenSale: tokenSaleInformation })
+      } catch(error) {
+        dispatch(ErrorActions.showError(error))
+      }
     }
-  }
+  },
 }
 
 export default TokenSaleActions

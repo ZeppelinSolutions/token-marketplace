@@ -29,7 +29,7 @@ export default class BuySellForm extends React.Component {
       <div ref="buySellForm" className={"col " + this.props.col}>
         <form className="card" onSubmit={this._handleSubmit}>
           <div className="card-content">
-            <h3 className="title">{this.props.action} some tokens</h3>
+            <h3 className="title">{this.props.action} tokens</h3>
             <p>Please select the token you want to {this.props.action}</p>
             <ERC20List selectERC20={this._selectERC20}/>
             <div className="row">
@@ -58,11 +58,7 @@ export default class BuySellForm extends React.Component {
             </div>
           </div>
           <div className="card-action">
-            <div className="input-field row">
-              <div className="col s1 offset-s10">
-                <button className="btn btn-primary">Publish</button>
-              </div>
-            </div>
+            <button className="btn btn-primary">Publish</button>
           </div>
         </form>
       </div>
@@ -74,7 +70,7 @@ export default class BuySellForm extends React.Component {
     const state = this.state
     const args = [state.tokenAddress, state.ownerAddress, state.amount, state.price]
     const contract = this.props.action === 'buy' ? TokenPurchaseActions : TokenSaleActions
-    Store.dispatch(contract.publish(...args))
+    Store.dispatch(contract.create(...args))
   }
 
   _selectERC20(erc20Address) {

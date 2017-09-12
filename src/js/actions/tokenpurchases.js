@@ -1,7 +1,6 @@
 import ErrorActions from './errors'
 import AccountActions from './accounts'
 import FetchingActions from './fetching'
-import TransactionActions from './transactions'
 import * as ActionTypes from '../actiontypes'
 import { GAS } from '../constants'
 import { ERC20, TokenPurchase } from '../contracts'
@@ -12,53 +11,44 @@ const TokenPurchaseActions = {
     return async function(dispatch) {
       try {
         const tokenPurchase = await TokenPurchase.at(tokenPurchaseAddress)
-        const contract = await TokenPurchaseActions._buildContractInformation(tokenPurchase)
-        dispatch(TokenPurchaseActions.receiveTokenPurchase(contract))
+        dispatch(TokenPurchaseActions.receiveTokenPurchase(tokenPurchase))
       } catch(error) {
         dispatch(ErrorActions.showError(error))
       }
     }
   },
 
-  publish(erc20Address, buyer, amount, price) {
+  create(erc20Address, buyer, amount, price) {
     return async function(dispatch) {
-      console.log(`Buying ${amount} tokens from ${buyer} by Wei ${price}`);
       dispatch(FetchingActions.start('creating your token purchase contract'))
       try {
         const erc20 = await ERC20.at(erc20Address)
         const tokenPurchase = await TokenPurchase.new(erc20.address, amount, { from: buyer, gas: GAS })
-        dispatch(TransactionActions.addTransaction(tokenPurchase.transactionHash));
-
         dispatch(FetchingActions.start('sending ether to your token purchase contract'))
-        const response = await tokenPurchase.sendTransaction({ from: buyer, value: price, gas: GAS })
-        dispatch(TransactionActions.addTransaction(response.tx));
-        dispatch(AccountActions.updateAccount(buyer, erc20Address));
-        const contract = await TokenPurchaseActions._buildContractInformation(tokenPurchase)
-        dispatch(AccountActions.deployedNewContract(contract.address))
+        await tokenPurchase.sendTransaction({ from: buyer, value: price, gas: GAS })
+        dispatch(AccountActions.findAccount())
+        dispatch(AccountActions.deployedNewContract(tokenPurchase.address))
         dispatch(FetchingActions.stop())
-      } catch(error) {
+      } catch (error) {
         dispatch(ErrorActions.showError(error))
       }
     }
   },
 
-  apply(tokenPurchaseAddress, seller) {
+  fulfill(tokenPurchaseAddress, seller) {
     return async function(dispatch) {
-      console.log(`Seller ${seller} applying to purchase ${tokenPurchaseAddress}`);
-      dispatch(FetchingActions.start('applying token purchase contract'))
+      dispatch(FetchingActions.start('fulfilling token purchase contract'))
       try {
         const tokenPurchase = await TokenPurchase.at(tokenPurchaseAddress)
         const erc20Address = await tokenPurchase.token()
         const erc20 = await ERC20.at(erc20Address)
         const amount = await tokenPurchase.amount()
-        const approval = await erc20.approve(tokenPurchase.address, amount, {from: seller, gas: GAS})
-        dispatch(TransactionActions.addTransaction(approval.tx));
-
-        const response = await tokenPurchase.claim({from: seller, gas: GAS})
-        dispatch(AccountActions.updateAccount(seller, erc20Address))
-        dispatch(TransactionActions.addTransaction(response.tx))
-        const contract = await TokenPurchaseActions._buildContractInformation(tokenPurchase)
-        dispatch(TokenPurchaseActions.receiveTokenPurchase(contract))
+        dispatch(FetchingActions.start(`approving ${amount} tokens to the token purchase contract`))
+        await erc20.approve(tokenPurchase.address, amount, {from: seller, gas: GAS})
+        dispatch(FetchingActions.start('claiming your ether to the token purchase contract'))
+        await tokenPurchase.claim({from: seller, gas: GAS})
+        dispatch(AccountActions.updateAccountBalance(erc20Address))
+        dispatch(TokenPurchaseActions.receiveTokenPurchase(tokenPurchase))
         dispatch(FetchingActions.stop())
       } catch (error) {
         dispatch(ErrorActions.showError(error))
@@ -67,18 +57,26 @@ const TokenPurchaseActions = {
   },
 
   receiveTokenPurchase(tokenPurchase) {
-    return { type: ActionTypes.RECEIVE_TOKEN_PURCHASE, tokenPurchase }
-  },
-
-  async _buildContractInformation(tokenPurchase) {
-    return {
-      address: tokenPurchase.address,
-      buyer: await tokenPurchase.owner(),
-      amount: await tokenPurchase.amount(),
-      price: await tokenPurchase.priceInWei(),
-      opened: await tokenPurchase.opened(),
+    return async function(dispatch) {
+      try {
+        const erc20Address = await tokenPurchase.token()
+        const erc20 = await ERC20.at(erc20Address)
+        const tokenPurchaseInformation = {
+          tokenName: erc20.name,
+          tokenSymbol: erc20.symbol,
+          address: tokenPurchase.address,
+          buyer: await tokenPurchase.owner(),
+          opened: await tokenPurchase.opened(),
+          amount: (await tokenPurchase.amount()).toString(),
+          price: (await tokenPurchase.priceInWei()).toString(),
+          tokenAddress: await tokenPurchase.token(),
+        }
+        dispatch({ type: ActionTypes.RECEIVE_TOKEN_PURCHASE, tokenPurchase: tokenPurchaseInformation })
+      } catch (error) {
+        dispatch(ErrorActions.showError(error))
+      }
     }
-  }
+  },
 }
 
 export default TokenPurchaseActions
