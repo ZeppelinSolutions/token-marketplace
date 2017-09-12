@@ -1,8 +1,8 @@
 import React from 'react';
-import Store from '../../store'
+import Store from '../store'
 import { withRouter } from 'react-router'
-import BuySellForm from './BuySellForm.react'
-import AccountActions from "../../actions/accounts";
+import BuySellForm from './buy-sell/BuySellForm.react'
+import AccountActions from "../actions/accounts";
 
 class BuySellPage extends React.Component {
   componentDidMount() {
