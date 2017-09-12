@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom'
 export default class TokenPurchaseDetails extends React.Component {
   constructor(props){
     super(props)
-    this.state = { tokenPurchase: this.props.tokenPurchase, loading: this.props.loading }
+    this.state = { tokenPurchase: this.props.tokenPurchase }
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ tokenPurchase: nextProps.tokenPurchase, loading: nextProps.loading })
+    this.setState({ tokenPurchase: nextProps.tokenPurchase })
   }
 
   render() {
@@ -16,7 +16,6 @@ export default class TokenPurchaseDetails extends React.Component {
     const status = tokenPurchase.opened ? 'open' : 'closed'
     return (
       <div ref="tokenPurchaseDetails" className={"col " + this.props.col}>
-        {this.state.loading ? 'Loading...' :
         <div className="card">
           <div className="card-content">
             <div className="row valign-wrapper">
@@ -56,7 +55,7 @@ export default class TokenPurchaseDetails extends React.Component {
               </div>
             </div>
           </div>
-        </div>}
+        </div>
       </div>
     );
   }

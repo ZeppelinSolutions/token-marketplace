@@ -1,6 +1,5 @@
 import React from 'react'
 import Store from '../../store'
-import Modal from '../Modal.react'
 import Account from '../Account.react'
 import AccountActions from '../../actions/accounts'
 import TokenPurchaseDetails from '../token-purchase/TokenPurchaseDetails.react'
@@ -10,24 +9,27 @@ import TokenPurchaseActions from '../../actions/tokenpurchases'
 export default class ShowTokenPurchase extends React.Component {
   constructor(props){
     super(props)
-    this.state = { tokenPurchase: {}, account: {} }
+    this.state = { fetching: true, tokenPurchase: {}, account: {} }
   }
 
   componentDidMount() {
     Store.subscribe(() => this._onChange())
+    Store.dispatch(AccountActions.findAccount())
     Store.dispatch(TokenPurchaseActions.getTokenPurchase(this.props.match.params.address))
   }
 
   render() {
     const undefinedAccount = typeof this.state.account.balance === 'undefined'
     const undefinedContract = typeof this.state.tokenPurchase.opened === 'undefined'
-    const loading = undefinedContract || undefinedAccount
+    const loading = this.state.fetching || undefinedContract || undefinedAccount
     return (
-      <div ref="tokenPurchase" className="row">
-        <Account account={this.state.account} col="s12"/>
-        <TokenPurchaseDetails tokenPurchase={this.state.tokenPurchase} col="s12"/>
-        <TokenPurchaseFulfill tokenPurchase={this.state.tokenPurchase} account={this.state.account} col="s12"/>
-        <Modal open={loading} progressBar message={'Loading token purchase data...'}/>
+      <div ref="tokenPurchase">
+        {loading ? '' :
+        <div className="row">
+          <Account account={this.state.account} col="s12"/>
+          <TokenPurchaseDetails tokenPurchase={this.state.tokenPurchase} col="s12"/>
+          <TokenPurchaseFulfill tokenPurchase={this.state.tokenPurchase} account={this.state.account} col="s12"/>
+        </div>}
       </div>
     )
   }
@@ -35,9 +37,9 @@ export default class ShowTokenPurchase extends React.Component {
   _onChange() {
     if(this.refs.tokenPurchase) {
       const state = Store.getState()
-      this.setState({ tokenPurchase: state.tokenPurchase, account: state.account })
-      if(this.state.tokenPurchase.tokenAddress)
-        Store.dispatch(AccountActions.findAccountFor(this.state.tokenPurchase.tokenAddress))
+      this.setState({ fetching: state.fetching, tokenPurchase: state.tokenPurchase, account: state.account })
+      if(state.tokenPurchase.tokenAddress && state.account.address && state.account.tokens === null)
+        Store.dispatch(AccountActions.updateTokensBalance(state.account.address, state.tokenPurchase.tokenAddress))
     }
   }
 }

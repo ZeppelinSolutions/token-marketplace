@@ -10,10 +10,11 @@ const TokenSaleActions = {
   getTokenSale(tokenSaleAddress) {
     return async function(dispatch) {
       try {
+        dispatch(FetchingActions.start('loading token sale data'))
         const tokenSale = await TokenSale.at(tokenSaleAddress)
         dispatch(TokenSaleActions.receiveTokenSale(tokenSale))
       } catch(error) {
-        dispatch(ErrorActions.showError(error))
+        dispatch(ErrorActions.showError(error, `There was an error trying to load given token sale contract at ${tokenSaleAddress}`))
       }
     }
   },
@@ -27,7 +28,8 @@ const TokenSaleActions = {
         const tokenSale = await TokenSale.new(erc20Address, price, {from: seller, gas: GAS})
         dispatch(FetchingActions.start('sending tokens to your token sale contract'))
         await erc20.transfer(tokenSale.address, amount, {from: seller, gas: GAS})
-        dispatch(AccountActions.updateAccountBalance(erc20Address))
+        dispatch(AccountActions.updateEtherBalance(seller))
+        dispatch(AccountActions.updateTokensBalance(seller, erc20Address))
         dispatch(AccountActions.deployedNewContract(tokenSale.address))
         dispatch(FetchingActions.stop())
       } catch (error) {
@@ -44,7 +46,8 @@ const TokenSaleActions = {
         const erc20Address = await tokenSale.token()
         const price = await tokenSale.priceInWei()
         await tokenSale.sendTransaction({from: buyer, value: price})
-        dispatch(AccountActions.updateAccountBalance(erc20Address))
+        dispatch(AccountActions.updateEtherBalance(buyer))
+        dispatch(AccountActions.updateTokensBalance(buyer, erc20Address))
         dispatch(TokenSaleActions.receiveTokenSale(tokenSale))
         dispatch(FetchingActions.stop())
       } catch(error) {
@@ -69,6 +72,7 @@ const TokenSaleActions = {
           tokenAddress: await tokenSale.token(),
         }
         dispatch({ type: ActionTypes.RECEIVE_TOKEN_SALE, tokenSale: tokenSaleInformation })
+        dispatch(FetchingActions.stop())
       } catch(error) {
         dispatch(ErrorActions.showError(error))
       }

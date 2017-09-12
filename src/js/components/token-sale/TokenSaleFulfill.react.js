@@ -5,12 +5,12 @@ import TokenSaleActions from '../../actions/tokensales'
 export default class TokenSaleFulfill extends React.Component {
   constructor(props){
     super(props)
-    this.state = { account: this.props.account, tokenSale: this.props.tokenSale, loading: this.props.loading }
+    this.state = { account: this.props.account, tokenSale: this.props.tokenSale }
     this._handleSubmit = this._handleSubmit.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ account: nextProps.account, tokenSale: nextProps.tokenSale, loading: nextProps.loading })
+    this.setState({ account: nextProps.account, tokenSale: nextProps.tokenSale })
   }
 
   render() {

@@ -1,4 +1,5 @@
 export const SHOW_ERROR = 'SHOW_ERROR';
+export const RESET_ERROR = 'RESET_ERROR';
 export const STOP_FETCHING = 'STOP_FETCHING';
 export const START_FETCHING = 'START_FETCHING';
 export const CONNECTION_FAILED = 'CONNECTION_FAILED';

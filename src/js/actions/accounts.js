@@ -10,34 +10,14 @@ const AccountActions = {
         const addresses = await Network.getAccounts()
         const mainAddress = addresses[0]
         dispatch(AccountActions.receiveAccount(mainAddress))
-        dispatch(AccountActions.getEtherBalance(mainAddress))
+        dispatch(AccountActions.updateEtherBalance(mainAddress))
       } catch(error) {
         dispatch(ErrorActions.showError(error))
       }
     }
   },
 
-  findAccountFor(erc20Address) {
-    return dispatch => {
-      dispatch(AccountActions.findAccount())
-      dispatch(AccountActions.updateAccountBalance(erc20Address))
-    }
-  },
-
-  updateAccountBalance(erc20Address) {
-    return async function(dispatch) {
-      try {
-        const addresses = await Network.getAccounts()
-        const mainAddress = addresses[0]
-        dispatch(AccountActions.getEtherBalance(mainAddress))
-        dispatch(AccountActions.getTokenBalance(mainAddress, erc20Address))
-      } catch(error) {
-        dispatch(ErrorActions.showError(error))
-      }
-    }
-  },
-
-  getEtherBalance(address) {
+  updateEtherBalance(address) {
     return async function(dispatch) {
       try {
         const balance = await Network.getBalance(address);
@@ -48,7 +28,7 @@ const AccountActions = {
     }
   },
 
-  getTokenBalance(owner, erc20Address) {
+  updateTokensBalance(owner, erc20Address) {
     return async function(dispatch) {
       try {
         const erc20 = await ERC20.at(erc20Address)

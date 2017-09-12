@@ -10,10 +10,11 @@ const TokenPurchaseActions = {
   getTokenPurchase(tokenPurchaseAddress) {
     return async function(dispatch) {
       try {
+        dispatch(FetchingActions.start('loading token purchase data'))
         const tokenPurchase = await TokenPurchase.at(tokenPurchaseAddress)
         dispatch(TokenPurchaseActions.receiveTokenPurchase(tokenPurchase))
       } catch(error) {
-        dispatch(ErrorActions.showError(error))
+        dispatch(ErrorActions.showError(error, `There was an error trying to load given token purchase contract at ${tokenPurchaseAddress}`))
       }
     }
   },
@@ -27,7 +28,7 @@ const TokenPurchaseActions = {
         const tokenPurchase = await TokenPurchase.new(erc20.address, amount, { from: buyer, gas: GAS })
         dispatch(FetchingActions.start('sending ether to your token purchase contract'))
         await tokenPurchase.sendTransaction({ from: buyer, value: price, gas: GAS })
-        dispatch(AccountActions.findAccount())
+        dispatch(AccountActions.updateEtherBalance(buyer))
         dispatch(AccountActions.deployedNewContract(tokenPurchase.address))
         dispatch(FetchingActions.stop())
       } catch (error) {
@@ -48,7 +49,8 @@ const TokenPurchaseActions = {
         await erc20.approve(tokenPurchase.address, amount, {from: seller, gas: GAS})
         dispatch(FetchingActions.start('claiming your ether to the token purchase contract'))
         await tokenPurchase.claim({from: seller, gas: GAS})
-        dispatch(AccountActions.updateAccountBalance(erc20Address))
+        dispatch(AccountActions.updateEtherBalance(seller))
+        dispatch(AccountActions.updateTokensBalance(seller, erc20Address))
         dispatch(TokenPurchaseActions.receiveTokenPurchase(tokenPurchase))
         dispatch(FetchingActions.stop())
       } catch (error) {
@@ -73,6 +75,7 @@ const TokenPurchaseActions = {
           tokenAddress: await tokenPurchase.token(),
         }
         dispatch({ type: ActionTypes.RECEIVE_TOKEN_PURCHASE, tokenPurchase: tokenPurchaseInformation })
+        dispatch(FetchingActions.stop())
       } catch (error) {
         dispatch(ErrorActions.showError(error))
       }

@@ -2,18 +2,19 @@ import React from 'react'
 import Home from './Home'
 import Store from '../store'
 import Modal from './Modal.react'
+import Error from './Error.react'
 import Navbar from './Navbar.react'
 import NetworkActions from '../actions/network'
 import NewTokenSale from './containers/NewTokenSale.react'
 import ShowTokenSale from './containers/ShowTokenSale.react'
-import NewTokenPurchase from './containers/NewTokenPurchase.react'
 import ShowTokenPurchase from './containers/ShowTokenPurchase.react'
+import NewTokenPurchase from './containers/NewTokenPurchase.react'
 import { Switch, Route } from 'react-router-dom'
 
 export default class App extends React.Component {
   constructor(props){
     super(props)
-    this.state = { error: null, connected: null, couldAccessAccount: null, fetching: false }
+    this.state = { connected: null, couldAccessAccount: null, fetching: false }
   }
 
   componentDidMount() {
@@ -31,7 +32,7 @@ export default class App extends React.Component {
       <div ref="app">
         <Navbar/>
         <div className="main-container container">
-          <div id="errors">{this.state.error ? this.state.error.message : ''}</div>
+          <Error/>
           <Switch>
             <Route path="/" exact component={Home}/>
             <Route path="/token-sale/" exact component={NewTokenSale}/>
@@ -48,12 +49,9 @@ export default class App extends React.Component {
   }
 
   _onChange() {
-    const state = Store.getState()
-    if(this.refs.app) this.setState({
-      error: state.error,
-      fetching: state.fetching,
-      connected: state.network.connected,
-      couldAccessAccount: state.network.couldAccessAccount
-    })
+    if(this.refs.app) {
+      const state = Store.getState()
+      this.setState({ fetching: state.fetching, connected: state.network.connected, couldAccessAccount: state.network.couldAccessAccount })
+    }
   }
 }

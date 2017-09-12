@@ -105,7 +105,7 @@ nav {
 }
 
 label {
-  font-size: 0.9rem !important;
+  font-size: 0.85rem !important;
 
   &.active {
     font-size: 12px !important;
@@ -116,9 +116,13 @@ p.labeled {
   padding: 4px 0 6px !important;
 }
 
-#errors {
-  background-color: #ffd6c8;
-  color: darkred;
+.close-error {
+  float: right;
+  margin-top: -10px;
+  color: lightgray;
+  font-family: sans-serif;
+  text-shadow: 2px 2px grey;
+  cursor: pointer;
 }
 
 //########## MODAL #############

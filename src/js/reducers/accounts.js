@@ -6,7 +6,7 @@ const initialState = { address: '', balance: 0, tokens: null, deployedAddress: n
 const AccountsReducer = (state = initialState, action) => {
   switch (action.type) {
     case ActionTypes.RECEIVE_ACCOUNT:
-      return Object.assign({}, state, { address: action.address });
+      return Object.assign({}, state, { address: action.address, tokens: null });
     case ActionTypes.RECEIVE_ETHER_BALANCE:
       return Object.assign({}, state, { balance: action.balance });
     case ActionTypes.RECEIVE_TOKEN_BALANCE:
@@ -14,7 +14,7 @@ const AccountsReducer = (state = initialState, action) => {
     case ActionTypes.DEPLOYED_NEW_CONTRACT:
       return Object.assign({}, state, { deployedAddress: action.address });
     case ActionTypes.DEPLOYED_NEW_CONTRACT_RESET:
-      return Object.assign({}, state, { deployedAddress: null, tokens: null });
+      return Object.assign({}, state, { deployedAddress: null });
     default:
       return state
   }

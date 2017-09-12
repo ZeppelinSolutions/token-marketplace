@@ -21,35 +21,33 @@ export default class TokenPurchaseForm extends React.Component {
 
   render() {
     return (
-      <div ref="tokenPurchaseForm" className="row">
-        <div className="col s12">
-          <form className="card" onSubmit={this._handleSubmit}>
-            <div className="card-content">
-              <h3 className="title">Buy tokens</h3>
-              <p>Please enter a token address manually or select the token you want to buy</p>
-              <div className="row">
-                <div className="input-field col s6">
-                  <label className={this.state.token ? 'active' : ''}>Token</label>
-                  <input onChange={this._updateToken} type="text" value={this.state.token} required/>
-                </div>
-                <ERC20List selectERC20={this._selectERC20} col="s6"/>
+      <div ref="tokenPurchaseForm" className={`col ${this.props.col}`}>
+        <form className="card" onSubmit={this._handleSubmit}>
+          <div className="card-content">
+            <h3 className="title">Buy tokens</h3>
+            <p>Please enter a token address manually or select the token you want to buy</p>
+            <div className="row">
+              <div className="input-field col s6">
+                <label className={this.state.token ? 'active' : ''}>Token</label>
+                <input onChange={this._updateToken} type="text" value={this.state.token} required/>
               </div>
-              <div className="row">
-                <div className="input-field col s3">
-                  <label>Amount of tokens you want to buy</label>
-                  <input onChange={this._updateAmount} type="number" required/>
-                </div>
-                <div className="input-field col s3">
-                  <label>WEI you are willing to pay per token</label>
-                  <input onChange={this._updatePrice} type="number" required/>
-                </div>
+              <ERC20List selectERC20={this._selectERC20} col="s6"/>
+            </div>
+            <div className="row">
+              <div className="input-field col s3">
+                <label>Amount of tokens you want to buy</label>
+                <input onChange={this._updateAmount} type="number" required/>
+              </div>
+              <div className="input-field col s3">
+                <label>WEI you are willing to pay per token</label>
+                <input onChange={this._updatePrice} type="number" required/>
               </div>
             </div>
-            <div className="card-action">
-              <button className="btn btn-primary">Publish</button>
-            </div>
-          </form>
-        </div>
+          </div>
+          <div className="card-action">
+            <button className="btn btn-primary">Publish</button>
+          </div>
+        </form>
       </div>
     )
   }
@@ -62,7 +60,7 @@ export default class TokenPurchaseForm extends React.Component {
 
   _selectERC20(erc20Address) {
     this.setState({ token: erc20Address })
-    Store.dispatch(AccountActions.getTokenBalance(this.state.account.address, erc20Address))
+    Store.dispatch(AccountActions.updateTokensBalance(this.state.account.address, erc20Address))
   }
 
   _updateToken(e) {
