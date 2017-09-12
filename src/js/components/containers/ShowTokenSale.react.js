@@ -9,7 +9,7 @@ import AccountActions from "../../actions/accounts";
 export default class ShowTokenSale extends React.Component {
   constructor(props){
     super(props)
-    this.state = { fetching: true, tokenSale: {}, account: {} }
+    this.state = { tokenSale: {}, account: {} }
   }
 
   componentDidMount() {
@@ -19,16 +19,19 @@ export default class ShowTokenSale extends React.Component {
   }
 
   render() {
-    const undefinedAccount = typeof this.state.account.balance === 'undefined'
-    const undefinedContract = typeof this.state.tokenSale.closed === 'undefined'
-    const loading = this.state.fetching || undefinedContract || undefinedAccount
+    const account = this.state.account
+    const tokenSale = this.state.tokenSale
+    const undefinedAccount = typeof account.balance === 'undefined'
+    const undefinedContract = typeof tokenSale.closed === 'undefined'
+    const loading = undefinedContract || undefinedAccount
+
     return (
       <div ref="tokenSale">
         {loading ? '' :
         <div className="row">
-          <Account account={this.state.account} col="s12"/>
-          <TokenSaleDetails tokenSale={this.state.tokenSale} col="s12"/>
-          <TokenSaleFulfill tokenSale={this.state.tokenSale} account={this.state.account} col="s12"/>
+          <Account account={account} col="s12"/>
+          <TokenSaleDetails tokenSale={tokenSale} col="s12"/>
+          {tokenSale.closed ? <TokenSaleFulfill tokenSale={tokenSale} account={account} col="s12"/> : ''}
         </div>}
       </div>
     )
@@ -37,7 +40,7 @@ export default class ShowTokenSale extends React.Component {
   _onChange() {
     if(this.refs.tokenSale) {
       const state = Store.getState()
-      this.setState({ fetching: state.fetching, tokenSale: state.tokenSale, account: state.account })
+      this.setState({ tokenSale: state.tokenSale, account: state.account })
       if(state.tokenSale.tokenAddress && state.account.address && state.account.tokens === null)
         Store.dispatch(AccountActions.updateTokensBalance(state.account.address, state.tokenSale.tokenAddress))
     }

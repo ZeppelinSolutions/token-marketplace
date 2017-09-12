@@ -10,7 +10,7 @@ const TokenPurchaseActions = {
   getTokenPurchase(tokenPurchaseAddress) {
     return async function(dispatch) {
       try {
-        dispatch(FetchingActions.start('loading token purchase data'))
+        dispatch(FetchingActions.start('Loading token purchase data'))
         const tokenPurchase = await TokenPurchase.at(tokenPurchaseAddress)
         dispatch(TokenPurchaseActions.receiveTokenPurchase(tokenPurchase))
       } catch(error) {
@@ -21,12 +21,12 @@ const TokenPurchaseActions = {
 
   create(erc20Address, buyer, amount, pricePerToken) {
     return async function(dispatch) {
-      dispatch(FetchingActions.start('creating your token purchase contract'))
+      dispatch(FetchingActions.start('Creating your token purchase contract'))
       try {
         const price = pricePerToken * amount
         const erc20 = await ERC20.at(erc20Address)
         const tokenPurchase = await TokenPurchase.new(erc20.address, amount, { from: buyer, gas: GAS })
-        dispatch(FetchingActions.start('sending ether to your token purchase contract'))
+        dispatch(FetchingActions.start('Sending ether to your token purchase contract'))
         await tokenPurchase.sendTransaction({ from: buyer, value: price, gas: GAS })
         dispatch(AccountActions.updateEtherBalance(buyer))
         dispatch(AccountActions.deployedNewContract(tokenPurchase.address))
@@ -39,15 +39,15 @@ const TokenPurchaseActions = {
 
   fulfill(tokenPurchaseAddress, seller) {
     return async function(dispatch) {
-      dispatch(FetchingActions.start('fulfilling token purchase contract'))
+      dispatch(FetchingActions.start('Fulfilling token purchase contract'))
       try {
         const tokenPurchase = await TokenPurchase.at(tokenPurchaseAddress)
         const erc20Address = await tokenPurchase.token()
         const erc20 = await ERC20.at(erc20Address)
         const amount = await tokenPurchase.amount()
-        dispatch(FetchingActions.start(`approving ${amount} tokens to the token purchase contract`))
+        dispatch(FetchingActions.start(`Approving ${amount} tokens to the token purchase contract`))
         await erc20.approve(tokenPurchase.address, amount, {from: seller, gas: GAS})
-        dispatch(FetchingActions.start('claiming your ether to the token purchase contract'))
+        dispatch(FetchingActions.start('Claiming your ether to the token purchase contract'))
         await tokenPurchase.claim({from: seller, gas: GAS})
         dispatch(AccountActions.updateEtherBalance(seller))
         dispatch(AccountActions.updateTokensBalance(seller, erc20Address))

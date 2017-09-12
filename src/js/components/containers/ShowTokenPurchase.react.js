@@ -9,7 +9,7 @@ import TokenPurchaseActions from '../../actions/tokenpurchases'
 export default class ShowTokenPurchase extends React.Component {
   constructor(props){
     super(props)
-    this.state = { fetching: true, tokenPurchase: {}, account: {} }
+    this.state = { tokenPurchase: {}, account: {} }
   }
 
   componentDidMount() {
@@ -19,16 +19,19 @@ export default class ShowTokenPurchase extends React.Component {
   }
 
   render() {
-    const undefinedAccount = typeof this.state.account.balance === 'undefined'
-    const undefinedContract = typeof this.state.tokenPurchase.opened === 'undefined'
-    const loading = this.state.fetching || undefinedContract || undefinedAccount
+    const account = this.state.account
+    const tokenPurchase = this.state.tokenPurchase
+    const undefinedAccount = typeof account.balance === 'undefined'
+    const undefinedContract = typeof tokenPurchase.opened === 'undefined'
+    const loading = undefinedContract || undefinedAccount
+
     return (
       <div ref="tokenPurchase">
         {loading ? '' :
         <div className="row">
-          <Account account={this.state.account} col="s12"/>
-          <TokenPurchaseDetails tokenPurchase={this.state.tokenPurchase} col="s12"/>
-          <TokenPurchaseFulfill tokenPurchase={this.state.tokenPurchase} account={this.state.account} col="s12"/>
+          <Account account={account} col="s12"/>
+          <TokenPurchaseDetails tokenPurchase={tokenPurchase} col="s12"/>
+          {tokenPurchase.opened ? <TokenPurchaseFulfill tokenPurchase={tokenPurchase} account={account} col="s12"/> : ''}
         </div>}
       </div>
     )
@@ -37,7 +40,7 @@ export default class ShowTokenPurchase extends React.Component {
   _onChange() {
     if(this.refs.tokenPurchase) {
       const state = Store.getState()
-      this.setState({ fetching: state.fetching, tokenPurchase: state.tokenPurchase, account: state.account })
+      this.setState({ tokenPurchase: state.tokenPurchase, account: state.account })
       if(state.tokenPurchase.tokenAddress && state.account.address && state.account.tokens === null)
         Store.dispatch(AccountActions.updateTokensBalance(state.account.address, state.tokenPurchase.tokenAddress))
     }

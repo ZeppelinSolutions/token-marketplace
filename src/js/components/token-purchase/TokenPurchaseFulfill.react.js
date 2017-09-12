@@ -22,7 +22,7 @@ export default class TokenPurchaseFulfill extends React.Component {
             <div className="row">{this._buildFulfillDescription()}</div>
           </div>
           <div className="card-action">
-            <button disabled={this._canBeFulfilled()} className="btn btn-primary">Fulfill</button>
+            <button disabled={this._notEnoughTokens()} className="btn btn-primary">Fulfill</button>
           </div>
         </form>
       </div>
@@ -32,29 +32,19 @@ export default class TokenPurchaseFulfill extends React.Component {
   _buildFulfillDescription() {
     const account = this.state.account;
     const tokenPurchase = this.state.tokenPurchase;
-    if(this._isPurchaseClosed())
-      return <div className="col s12"><p>You cannot fulfilled this token purchase contract since it is already closed.</p></div>
-    if(this._notEnoughTokens())
-      return <div className="col s12"><p>You don't have enough {tokenPurchase.tokenSymbol} balance in your account ({account.address}) to fulfill this contract.</p></div>
-    return (
+    return this._notEnoughTokens() ?
+      <div className="col s12">
+        <p>You don't have enough {tokenPurchase.tokenSymbol} balance in your account ({account.address}) to fulfill this contract.</p>
+      </div> :
       <div className="col s12">
         <p>If you fulfill this token purchase contract, then two transactions will be performed:</p>
         <p>1. Firstly, you will be requested to sign a token approval to the token purchase contract.</p>
         <p>2. Then, you will claim the ether balance of the token purchase contract to be transfer to your account ({account.address}).</p>
       </div>
-    )
-  }
-
-  _canBeFulfilled() {
-    return this._isPurchaseClosed() || this._notEnoughTokens()
   }
 
   _notEnoughTokens() {
     return this.state.account.tokens < this.state.tokenPurchase.amount
-  }
-
-  _isPurchaseClosed() {
-    return !this.state.tokenPurchase.opened
   }
 
   _handleSubmit(e) {

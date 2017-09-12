@@ -16,7 +16,7 @@ class Modal extends React.Component {
     return (
       <div id="overlay" className={cssClass}>
         <div className="content">
-          <h4>{this.state.message}</h4>
+          <p>{this.state.message}</p>
           {this._renderProgressBar()}
         </div>
       </div>

@@ -7,7 +7,7 @@ import TokenSaleForm from '../token-sale/TokenSaleForm.react'
 export default class NewTokenSale extends React.Component {
   constructor(props){
     super(props)
-    this.state = { fetching: true, account: {} }
+    this.state = { account: {} }
   }
 
   componentDidMount() {
@@ -17,10 +17,9 @@ export default class NewTokenSale extends React.Component {
 
   render() {
     const undefinedAccount = typeof this.state.account.address === 'undefined'
-    const loading = this.state.fetching || undefinedAccount
     return (
       <div ref="newTokenSale">
-        {loading ? '' :
+        {undefinedAccount ? '' :
         <div className="row">
           <Account account={this.state.account} col="s12"/>
           <TokenSaleForm account={this.state.account} col="s12"/>
@@ -32,7 +31,7 @@ export default class NewTokenSale extends React.Component {
   _onChange() {
     if(this.refs.newTokenSale) {
       const state = Store.getState()
-      this.setState({ fetching: state.fetching, account: state.account })
+      this.setState({ account: state.account })
       const deployedAddress = state.account.deployedAddress;
       if(deployedAddress) {
         this.props.history.push(`/token-sale/${deployedAddress}`)

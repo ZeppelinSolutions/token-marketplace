@@ -10,7 +10,7 @@ const TokenSaleActions = {
   getTokenSale(tokenSaleAddress) {
     return async function(dispatch) {
       try {
-        dispatch(FetchingActions.start('loading token sale data'))
+        dispatch(FetchingActions.start('Loading token sale data'))
         const tokenSale = await TokenSale.at(tokenSaleAddress)
         dispatch(TokenSaleActions.receiveTokenSale(tokenSale))
       } catch(error) {
@@ -21,12 +21,12 @@ const TokenSaleActions = {
 
   create(erc20Address, seller, amount, pricePerToken) {
     return async function(dispatch) {
-      dispatch(FetchingActions.start('creating your token sale contract'))
+      dispatch(FetchingActions.start('Creating your token sale contract'))
       try {
         const price = pricePerToken * amount
         const erc20 = await ERC20.at(erc20Address)
         const tokenSale = await TokenSale.new(erc20Address, price, {from: seller, gas: GAS})
-        dispatch(FetchingActions.start('sending tokens to your token sale contract'))
+        dispatch(FetchingActions.start('Sending tokens to your token sale contract'))
         await erc20.transfer(tokenSale.address, amount, {from: seller, gas: GAS})
         dispatch(AccountActions.updateEtherBalance(seller))
         dispatch(AccountActions.updateTokensBalance(seller, erc20Address))
@@ -40,7 +40,7 @@ const TokenSaleActions = {
 
   fulfill(tokenSaleAddress, buyer) {
     return async function(dispatch) {
-      dispatch(FetchingActions.start('fulfilling token sale contract'))
+      dispatch(FetchingActions.start('Fulfilling token sale contract'))
       try {
         const tokenSale = await TokenSale.at(tokenSaleAddress)
         const erc20Address = await tokenSale.token()
