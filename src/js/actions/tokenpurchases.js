@@ -18,10 +18,11 @@ const TokenPurchaseActions = {
     }
   },
 
-  create(erc20Address, buyer, amount, price) {
+  create(erc20Address, buyer, amount, pricePerToken) {
     return async function(dispatch) {
       dispatch(FetchingActions.start('creating your token purchase contract'))
       try {
+        const price = pricePerToken * amount
         const erc20 = await ERC20.at(erc20Address)
         const tokenPurchase = await TokenPurchase.new(erc20.address, amount, { from: buyer, gas: GAS })
         dispatch(FetchingActions.start('sending ether to your token purchase contract'))

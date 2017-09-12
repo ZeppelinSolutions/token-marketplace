@@ -39,7 +39,7 @@ html {
 }
 
 .main-container {
-  padding-top: 50px;
+  padding-top: 30px;
 }
 
 .open-chip {
@@ -104,6 +104,14 @@ nav {
   }
 }
 
+label {
+  font-size: 0.9rem !important;
+
+  &.active {
+    font-size: 12px !important;
+  }
+}
+
 p.labeled {
   padding: 4px 0 6px !important;
 }
@@ -157,12 +165,12 @@ p.labeled {
 }
 
 .erc20-list {
-  margin: 20px !important;
+  margin-top: 20px !important;
 
   .option {
     cursor: pointer;
     text-align: center;
-    margin: 0 15px !important;
+    margin: 0 10px !important;
     position: static !important;
     z-index: 9999 !important;
     color: white !important;
@@ -170,14 +178,23 @@ p.labeled {
   }
 }
 
-.balance-notification {
-  padding: 5px 20px;
-  margin-top: 5px !important;
-  position: relative;
-  color: #f3f3fd !important;
-  font-size: 13px !important;
-  background-color: $primary-5;
-  border-radius: 20px;
-  -moz-border-radius: 20px;
-  -webkit-border-radius: 20px;
+.account-details {
+  .card {
+    color: #f3f3fd !important;
+    font-size: 13px !important;
+    background-color: $primary-5;
+
+    .card-content {
+      padding: 10px 24px !important;
+
+      .title {
+        font-size: 20px;
+        letter-spacing: 0;
+        color: $primary-2;
+        margin: 2px !important;
+        text-transform: uppercase;
+        font-family: SourceExtraLight;
+      }
+    }
+  }
 }

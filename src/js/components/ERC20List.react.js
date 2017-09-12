@@ -13,7 +13,7 @@ export default class ERC20List extends React.Component {
 
   render() {
     return (
-      <div className="row erc20-list">
+      <div className={`col ${this.props.col} erc20-list`}>
         <a className="btn btn-floating option tooltipped" id="0x7d7079ae4985c58420e41dec33768a56c6b2cb25" data-position="bottom" data-delay="50" data-tooltip="MyToken" onClick={this.selectERC20}>MTK</a>
         <a className="btn btn-floating option tooltipped" id="0xa0969323ce4d1826ddeaa451c4c1f0c9c67d3762" data-position="bottom" data-delay="50" data-tooltip="Banana Coin" onClick={this.selectERC20}>BAC</a>
         <a className="btn btn-floating option tooltipped" id="0xb5de0b4cbf397209e4badafa7f31aec57518cebc" data-position="bottom" data-delay="50" data-tooltip="Whatever" onClick={this.selectERC20}>WTV</a>

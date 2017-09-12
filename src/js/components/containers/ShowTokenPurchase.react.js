@@ -1,15 +1,16 @@
 import React from 'react'
 import Store from '../../store'
 import Modal from '../Modal.react'
+import Account from '../Account.react'
 import AccountActions from '../../actions/accounts'
-import TokenPurchaseDetails from './TokenPurchaseDetails.react'
-import TokenPurchaseFulfill from './TokenPurchaseFulfill.react'
+import TokenPurchaseDetails from '../token-purchase/TokenPurchaseDetails.react'
+import TokenPurchaseFulfill from '../token-purchase/TokenPurchaseFulfill.react'
 import TokenPurchaseActions from '../../actions/tokenpurchases'
 
-export default class TokenPurchasePage extends React.Component {
+export default class ShowTokenPurchase extends React.Component {
   constructor(props){
     super(props)
-    this.state = { tokenPurchase: {}, fulfiller: {} }
+    this.state = { tokenPurchase: {}, account: {} }
   }
 
   componentDidMount() {
@@ -18,13 +19,14 @@ export default class TokenPurchasePage extends React.Component {
   }
 
   render() {
+    const undefinedAccount = typeof this.state.account.balance === 'undefined'
     const undefinedContract = typeof this.state.tokenPurchase.opened === 'undefined'
-    const undefinedFulfiller = typeof this.state.fulfiller.balance === 'undefined'
-    const loading = undefinedContract || undefinedFulfiller
+    const loading = undefinedContract || undefinedAccount
     return (
       <div ref="tokenPurchase" className="row">
+        <Account account={this.state.account} col="s12"/>
         <TokenPurchaseDetails tokenPurchase={this.state.tokenPurchase} col="s12"/>
-        <TokenPurchaseFulfill tokenPurchase={this.state.tokenPurchase} fulfiller={this.state.fulfiller} col="s12"/>
+        <TokenPurchaseFulfill tokenPurchase={this.state.tokenPurchase} account={this.state.account} col="s12"/>
         <Modal open={loading} progressBar message={'Loading token purchase data...'}/>
       </div>
     )
@@ -33,7 +35,7 @@ export default class TokenPurchasePage extends React.Component {
   _onChange() {
     if(this.refs.tokenPurchase) {
       const state = Store.getState()
-      this.setState({ tokenPurchase: state.tokenPurchase, fulfiller: state.account })
+      this.setState({ tokenPurchase: state.tokenPurchase, account: state.account })
       if(this.state.tokenPurchase.tokenAddress)
         Store.dispatch(AccountActions.findAccountFor(this.state.tokenPurchase.tokenAddress))
     }

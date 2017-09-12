@@ -37,7 +37,7 @@ export default class TokenPurchaseDetails extends React.Component {
                 <p className="labeled">{tokenPurchase.amount}</p>
               </div>
               <div className="input-field col s3">
-                <label className="active">Wei you will get</label>
+                <label className="active">Total WEI you will get in return</label>
                 <p className="labeled">{tokenPurchase.price}</p>
               </div>
               <div className="input-field col s3">

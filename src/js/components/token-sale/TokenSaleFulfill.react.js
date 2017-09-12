@@ -5,12 +5,12 @@ import TokenSaleActions from '../../actions/tokensales'
 export default class TokenSaleFulfill extends React.Component {
   constructor(props){
     super(props)
-    this.state = { fulfiller: this.props.fulfiller, tokenSale: this.props.tokenSale, loading: this.props.loading }
+    this.state = { account: this.props.account, tokenSale: this.props.tokenSale, loading: this.props.loading }
     this._handleSubmit = this._handleSubmit.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ fulfiller: nextProps.fulfiller, tokenSale: nextProps.tokenSale, loading: nextProps.loading })
+    this.setState({ account: nextProps.account, tokenSale: nextProps.tokenSale, loading: nextProps.loading })
   }
 
   render() {
@@ -30,15 +30,15 @@ export default class TokenSaleFulfill extends React.Component {
   }
 
   _buildFulfillDescription() {
-    const fulfiller = this.state.fulfiller;
+    const account = this.state.account;
     if(this._isSaleClosed())
       return <div className="col s12"><p>You cannot fulfilled this token sale contract since it is already closed.</p></div>
     if(this._notEnoughEther())
-      return <div className="col s12"><p>You don't have enough ether balance in your account ({fulfiller.address}) to fulfill this contract.</p></div>
+      return <div className="col s12"><p>You don't have enough ether balance in your account ({account.address}) to fulfill this contract.</p></div>
     return (
       <div className="col s12">
         <p>If you fulfill this token sale contract, then one transaction will be performed:</p>
-        <p>You will be requested to sign an ether transaction from your account ({fulfiller.address}) to the token sale contract, in order to receive the given amount of tokens in return.</p>
+        <p>You will be requested to sign an ether transaction from your account ({account.address}) to the token sale contract, in order to receive the given amount of tokens in return.</p>
       </div>
     )
   }
@@ -48,7 +48,7 @@ export default class TokenSaleFulfill extends React.Component {
   }
 
   _notEnoughEther() {
-    return this.state.fulfiller.balance < this.state.tokenSale.balance
+    return this.state.account.balance < this.state.tokenSale.balance
   }
 
   _isSaleClosed() {
@@ -57,6 +57,6 @@ export default class TokenSaleFulfill extends React.Component {
 
   _handleSubmit(e) {
     e.preventDefault();
-    Store.dispatch(TokenSaleActions.fulfill(this.state.tokenSale.address, this.state.fulfiller.address))
+    Store.dispatch(TokenSaleActions.fulfill(this.state.tokenSale.address, this.state.account.address))
   }
 }
