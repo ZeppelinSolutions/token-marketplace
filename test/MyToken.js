@@ -22,7 +22,7 @@ contract('MyToken', accounts => {
 
     name.should.be.equal('MyToken')
     symbol.should.be.equal('MTK')
-    balance.should.be.bignumber.equal(new BigNumber(10000))
+    balance.should.be.bignumber.equal(10000)
   });
 
   describe('when an owner send some tokens to a receiver', () => {
@@ -37,8 +37,8 @@ contract('MyToken', accounts => {
         const ownerBalance = await myToken.balanceOf(owner);
         const receiverBalance = await myToken.balanceOf(receiver);
 
-        ownerBalance.should.be.bignumber.equal(new BigNumber(9990));
-        receiverBalance.should.be.bignumber.equal(new BigNumber(10));
+        ownerBalance.should.be.bignumber.equal(9990);
+        receiverBalance.should.be.bignumber.equal(10);
         result.logs[0].event.should.be.equal('Transfer');
       });
     });
@@ -61,7 +61,7 @@ contract('MyToken', accounts => {
 
     async function itDoesNotSendAmount(sendingAmount) {
       try {
-        await myToken.transfer(receiver, sendingAmount, {from: owner});
+        await myToken.transfer(receiver, sendingAmount, { from: owner });
       } catch (error) {
         error.message.search('invalid opcode').should.be.above(0);
       }
@@ -69,8 +69,8 @@ contract('MyToken', accounts => {
       const ownerBalance = await myToken.balanceOf(owner);
       const receiverBalance = await myToken.balanceOf(receiver);
 
-      ownerBalance.should.be.bignumber.equal(new BigNumber(10000));
-      receiverBalance.should.be.bignumber.equal(new BigNumber(0));
+      ownerBalance.should.be.bignumber.equal(10000);
+      receiverBalance.should.be.bignumber.equal(0);
     }
   });
 });

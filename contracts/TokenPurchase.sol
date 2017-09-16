@@ -1,21 +1,34 @@
 pragma solidity ^0.4.11;
 
-import '../node_modules/zeppelin-solidity/contracts/token/ERC20.sol';
+import './DetailedERC20.sol';
 import '../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol';
 
 contract TokenPurchase is Ownable {
-  ERC20 public token;
+  bool public closed;
+  bool public canReceiveEther;
   uint256 public amount;
-  bool public opened;
+  DetailedERC20 public token;
 
+  event Refund(uint256 price);
   event TokenSold(address buyer, address seller, uint256 price, uint256 amount);
 
-  function TokenPurchase(ERC20 _token, uint256 _amount) {
+  modifier notClosed() {
+    require(!closed);
+    _;
+  }
+
+  modifier canNotReceiveEther() {
+    require(!canReceiveEther);
+    _;
+  }
+
+  function TokenPurchase(DetailedERC20 _token, uint256 _amount) {
     if(_amount <= 0) return;
 
     token = _token;
     amount = _amount;
-    opened = false;
+    closed = true;
+    canReceiveEther = true;
   }
 
   function priceInWei() constant returns(uint) {
@@ -24,23 +37,33 @@ contract TokenPurchase is Ownable {
 
   function () payable onlyOwner {
     require(msg.value > 0);
+    require(closed);
+    require(canReceiveEther);
 
-    opened = true;
+    closed = false;
+    canReceiveEther = false;
   }
 
-  function claim() returns(bool){
-    address seller = msg.sender;
-    uint256 allowedTokens = token.allowance(seller, address(this));
+  function claim() notClosed canNotReceiveEther returns(bool) {
+    address _seller = msg.sender;
+    uint256 _allowedTokens = token.allowance(_seller, address(this));
+    require(_allowedTokens >= amount);
 
-    require(opened);
-    require(allowedTokens >= amount);
+    closed = true;
 
-    opened = false;
+    if(!token.transferFrom(_seller, owner, amount)) revert();
+    uint256 _priceInWei = priceInWei();
+    _seller.transfer(_priceInWei);
+    TokenSold(owner, _seller, _priceInWei, amount);
+    return true;
+  }
 
-    if(!token.transferFrom(seller, owner, amount)) revert();
-    uint balance = this.balance;
-    seller.transfer(balance);
-    TokenSold(owner, seller, balance, amount);
+  function refund() onlyOwner notClosed canNotReceiveEther returns(bool) {
+    closed = true;
+
+    uint256 _priceInWei = priceInWei();
+    owner.transfer(_priceInWei);
+    Refund(_priceInWei);
     return true;
   }
 }

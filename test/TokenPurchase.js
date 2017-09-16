@@ -13,10 +13,9 @@ contract('TokenPurchase', accounts => {
   describe('given a tokens contract with an initial owner', async function () {
     let myToken = null;
     const owner = accounts[0];
-    const myTokensInitialAmount = new BigNumber(100);
 
     beforeEach(async function() {
-      myToken = await MyToken.new(myTokensInitialAmount, { from: owner });
+      myToken = await MyToken.new({ from: owner });
     });
 
     describe('given a token purchase contract', async function () {
@@ -28,203 +27,289 @@ contract('TokenPurchase', accounts => {
         tokenPurchase = await TokenPurchase.new(myToken.address, buyingAmountOfTokens, { from: purchaser });
       });
 
-      it('is initialized with the buyer, the amount of tokens to buy, and the tokens contract', async function () {
-        const buyer = await tokenPurchase.owner();
+      it('is initialized with the owner, the amount of tokens to buy, and the tokens contract', async function () {
+        const owner = await tokenPurchase.owner();
         const amount = await tokenPurchase.amount();
         const tokenAddress = await tokenPurchase.token();
 
-        buyer.should.be.equal(purchaser);
+        owner.should.be.equal(purchaser);
         tokenAddress.should.be.equal(myToken.address);
         amount.should.be.bignumber.equal(buyingAmountOfTokens);
       });
 
-      it('is not opened and does not have ether initially', async function () {
+      it('is not closed and does not have ether initially', async function () {
         const priceInWei = await tokenPurchase.priceInWei();
-        const opened = await tokenPurchase.opened();
+        const closed = await tokenPurchase.closed();
 
-        opened.should.be.false;
-        priceInWei.should.be.bignumber.equal(new BigNumber(0));
+        closed.should.be.true;
+        priceInWei.should.be.bignumber.equal(0);
       });
 
       describe('when some ether is transferred to the purchase contract', async function() {
         let transaction = null;
 
         describe('when the the amount of sent ether is greater than 0', async function() {
-          const buyingPriceInWei = new BigNumber(1000);
+          const value = new BigNumber(1000);
 
-          describe('when the sender is the buyer of the purchase contract', async function() {
+          describe('when the sender is the purchaser of the purchase contract', async function() {
+            let purchaserPreEtherBalance = null;
+            let contractPreEtherBalance = null;
 
-            it('opens the purchase contract and receives the amount of ether as the price for those tokens', async function () {
-              const senderPreEtherBalance = web3.eth.getBalance(purchaser);
-              const contractPreEtherBalance = web3.eth.getBalance(tokenPurchase.address);
-
-              transaction = await tokenPurchase.sendTransaction({ from: purchaser, value: buyingPriceInWei, gasPrice: 0 });
-              const priceInWei = await tokenPurchase.priceInWei();
-              const opened = await tokenPurchase.opened();
-
-              opened.should.be.true;
-              priceInWei.should.be.bignumber.equal(buyingPriceInWei);
-              web3.eth.getBalance(purchaser).should.bignumber.be.equal(senderPreEtherBalance.minus(buyingPriceInWei));
-              web3.eth.getBalance(tokenPurchase.address).should.bignumber.be.equal(contractPreEtherBalance.plus(buyingPriceInWei));
+            beforeEach(async function() {
+              purchaserPreEtherBalance = web3.eth.getBalance(purchaser);
+              contractPreEtherBalance = web3.eth.getBalance(tokenPurchase.address);
+              transaction = await tokenPurchase.sendTransaction({ from: purchaser, value: value, gasPrice: 0 });
             });
 
-            describe('when an owner approves some tokens to the purchase contract', async function () {
-              beforeEach(async function() {
-                transaction = await tokenPurchase.sendTransaction({ from: purchaser, value: buyingPriceInWei });
-              });
+            it('opens the purchase contract and receives the amount of ether as the price for those tokens', async function () {
+              const closed = await tokenPurchase.closed();
+              const priceInWei = await tokenPurchase.priceInWei();
 
-              describe('when an owner approved less than the requested amount of tokens to the purchase contract', async function () {
+              closed.should.be.false;
+              priceInWei.should.be.bignumber.equal(value);
+              web3.eth.getBalance(purchaser).should.bignumber.be.equal(purchaserPreEtherBalance.minus(value));
+              web3.eth.getBalance(tokenPurchase.address).should.bignumber.be.equal(contractPreEtherBalance.plus(value));
+            });
+
+            describe('when a seller approves some tokens to the purchase contract and claims the balance of the contract', async function () {
+              let claim = null;
+              const seller = owner;
+
+              describe('when a seller approves less than the requested amount of tokens to the purchase contract', async function () {
                 beforeEach(async function() {
-                  await myToken.approve(tokenPurchase.address, buyingAmountOfTokens.minus(1), { from: owner });
+                  await myToken.approve(tokenPurchase.address, buyingAmountOfTokens.minus(1), { from: seller });
                 });
                 
-                it('does not transfer the money to the seller nor the tokens to the buyer', async function() {
-                  const ownerPreEtherBalance = web3.eth.getBalance(owner);
+                it('does not transfer the money to the seller nor the tokens to the purchaser', async function() {
+                  const sellerPreEtherBalance = web3.eth.getBalance(seller);
                   const contractPreEtherBalance = web3.eth.getBalance(tokenPurchase.address);
 
                   try {
-                    await tokenPurchase.claim({ from: owner, gasPrice: 0 });
+                    await tokenPurchase.claim({ from: seller, gasPrice: 0 });
                   } catch(error) {
                     error.message.search('invalid opcode').should.be.above(0);
                   }
 
-                  const buyerTokens = await myToken.balanceOf(purchaser);
-                  const opened = await tokenPurchase.opened();
+                  const closed = await tokenPurchase.closed();
+                  const purchaserTokens = await myToken.balanceOf(purchaser);
 
-                  opened.should.be.true;
-                  buyerTokens.should.be.bignumber.equal(new BigNumber(0));
-                  web3.eth.getBalance(owner).should.be.bignumber.equal(ownerPreEtherBalance);
+                  closed.should.be.false;
+                  purchaserTokens.should.be.bignumber.equal(0);
+                  web3.eth.getBalance(seller).should.be.bignumber.equal(sellerPreEtherBalance);
                   web3.eth.getBalance(tokenPurchase.address).should.be.bignumber.equal(contractPreEtherBalance);
                 });
               });
 
-              describe('when the owner approved the requested amount of tokens to the purchase contract', async function () {
+              describe('when a seller approves the requested amount of tokens to the purchase contract', async function () {
                 beforeEach(async function() {
-                  await myToken.approve(tokenPurchase.address, buyingAmountOfTokens, { from: owner });
+                  await myToken.approve(tokenPurchase.address, buyingAmountOfTokens, { from: seller, gasPrice: 0 });
                 });
                 
-                it('transfers the money to the seller and the tokens to the buyer', async function() {
-                  const ownerPreEtherBalance = web3.eth.getBalance(owner);
+                it('transfers the money to the seller and the tokens to the purchaser', async function() {
+                  const sellerPreEtherBalance = web3.eth.getBalance(seller);
 
-                  await tokenPurchase.claim({ from: owner, gasPrice: 0 });
-                  const opened = await tokenPurchase.opened();
-                  const buyerTokens = await myToken.balanceOf(purchaser);
+                  claim = await tokenPurchase.claim({ from: seller, gasPrice: 0 });
+                  const closed = await tokenPurchase.closed();
+                  const purchaserTokens = await myToken.balanceOf(purchaser);
 
-                  opened.should.be.false;
-                  buyerTokens.should.be.bignumber.equal(buyingAmountOfTokens);
-                  web3.eth.getBalance(tokenPurchase.address).should.be.bignumber.equal(new BigNumber(0));
-                  web3.eth.getBalance(owner).should.be.bignumber.equal(ownerPreEtherBalance.plus(buyingPriceInWei));
+                  closed.should.be.true;
+                  purchaserTokens.should.be.bignumber.equal(buyingAmountOfTokens);
+                  web3.eth.getBalance(tokenPurchase.address).should.be.bignumber.equal(0);
+                  web3.eth.getBalance(seller).should.be.bignumber.equal(sellerPreEtherBalance.plus(value));
+                  claim.logs[0].event.should.be.equal('TokenSold');
+                });
+
+                it('does not allow to receive more ether', async function() {
+                  await tokenPurchase.claim({ from: seller, gasPrice: 0 });
+
+                  try {
+                    await tokenPurchase.sendTransaction({ from: purchaser, value: new BigNumber(10) });
+                  } catch (error) {
+                    error.message.search('invalid opcode').should.be.above(0);
+                  }
+                  const closed = await tokenPurchase.closed()
+
+                  closed.should.be.true;
+                  web3.eth.getBalance(tokenPurchase.address).should.be.bignumber.equal(0);
+                });
+
+                describe('when the purchaser requests a refund', async function() {
+                  let refund = null;
+
+                  it('refuses the refund, does not close the contract and the allowance to the contract remains', async function() {
+                    const contractPreEtherBalance = web3.eth.getBalance(tokenPurchase.address);
+                    const purchaserPreEtherBalance = web3.eth.getBalance(purchaser);
+
+                    try {
+                      refund = await tokenPurchase.refund({ from: purchaser, gasPrice: 0 });
+                    } catch (error) {
+                      error.message.search('invalid opcode').should.be.above(0);
+                    }
+
+                    const closed = await tokenPurchase.closed();
+                    const allowedTokens = await myToken.allowance(seller, tokenPurchase.address);
+
+                    closed.should.be.true;
+                    allowedTokens.should.be.bignumber.equal(buyingAmountOfTokens);
+
+                    web3.eth.getBalance(tokenPurchase.address).should.be.bignumber.equal(0);
+                    web3.eth.getBalance(purchaser).should.be.bignumber.equal(purchaserPreEtherBalance.plus(contractPreEtherBalance));
+                  });
                 });
               });
 
-              describe('when the owner approved more than the requested amount of tokens to the purchase contract', async function () {
+              describe('when a seller approves more than the requested amount of tokens to the purchase contract', async function () {
                 beforeEach(async function() {
-                  await myToken.approve(tokenPurchase.address, buyingAmountOfTokens.plus(1), { from: owner });
+                  await myToken.approve(tokenPurchase.address, buyingAmountOfTokens.plus(1), { from: seller });
                 });
 
-                it('transfers the money to the seller and the tokens to the buyer', async function() {
-                  const ownerPreEtherBalance = web3.eth.getBalance(owner);
+                it('transfers the money to the seller and the tokens to the purchaser', async function() {
+                  const sellerPreEtherBalance = web3.eth.getBalance(seller);
 
-                  await tokenPurchase.claim({ from: owner, gasPrice: 0 });
-                  const opened = await tokenPurchase.opened();
-                  const buyerTokens = await myToken.balanceOf(purchaser);
+                  claim = await tokenPurchase.claim({ from: seller, gasPrice: 0 });
+                  const closed = await tokenPurchase.closed();
+                  const purchaserTokens = await myToken.balanceOf(purchaser);
 
-                  opened.should.be.false;
-                  buyerTokens.should.be.bignumber.equal(buyingAmountOfTokens);
-                  web3.eth.getBalance(tokenPurchase.address).should.be.bignumber.equal(new BigNumber(0));
-                  web3.eth.getBalance(owner).should.be.bignumber.equal(ownerPreEtherBalance.plus(buyingPriceInWei));
+                  closed.should.be.true;
+                  purchaserTokens.should.be.bignumber.equal(buyingAmountOfTokens);
+                  web3.eth.getBalance(tokenPurchase.address).should.be.bignumber.equal(0);
+                  web3.eth.getBalance(seller).should.be.bignumber.equal(sellerPreEtherBalance.plus(value));
+                  claim.logs[0].event.should.be.equal('TokenSold');
                 });
+              });
+            });
+
+            describe('when the purchaser requests a refund', async function() {
+              let refund = null;
+
+              it('returns the balance to the purchaser and closes the contract', async function() {
+                refund = await tokenPurchase.refund({ from: purchaser, gasPrice: 0 });
+
+                const amount = await tokenPurchase.amount();
+                const closed = await tokenPurchase.closed();
+                const priceInWei = await tokenPurchase.priceInWei();
+
+                closed.should.be.true;
+                priceInWei.should.be.bignumber.equal(0);
+                amount.should.be.bignumber.equal(buyingAmountOfTokens);
+
+                refund.logs[0].event.should.be.equal('Refund');
+                web3.eth.getBalance(tokenPurchase.address).should.be.bignumber.equal(0);
+                web3.eth.getBalance(purchaser).should.be.bignumber.equal(purchaserPreEtherBalance);
               });
             });
           });
 
-          describe('when the sender is not the buyer of the purchase contract', async function() {
+          describe('when the sender is not the purchaser of the purchase contract', async function() {
+            const anotherOne = accounts[3];
 
             it('does not open the purchase contract', async function () {
-              await assertItDoesNotOpenThePurchaseContract(owner, buyingPriceInWei, new BigNumber(0));
+              await assertItDoesNotOpenThePurchaseContract(anotherOne, value);
             });
           });
         });
 
         describe('when the the amount of sent ether is 0', async function() {
-          const buyingPriceInWei = new BigNumber(0);
+          const value = new BigNumber(0);
 
           it('does not open the purchase contract', async function () {
-            await assertItDoesNotOpenThePurchaseContract(purchaser, buyingPriceInWei, buyingPriceInWei);
+            await assertItDoesNotOpenThePurchaseContract(purchaser, value);
           });
         });
 
-        async function assertItDoesNotOpenThePurchaseContract(from, value, expectedContractPrice) {
-          const senderPreEtherBalance = web3.eth.getBalance(from);
-          const contractPreEtherBalance = web3.eth.getBalance(tokenPurchase.address);
+        async function assertItDoesNotOpenThePurchaseContract(sender, value) {
+          const senderPreEtherBalance = web3.eth.getBalance(sender);
 
           try {
-            transaction = await tokenPurchase.sendTransaction({ from: from, value: value, gasPrice: 0 });
+            transaction = await tokenPurchase.sendTransaction({ from: sender, value: value, gasPrice: 0 });
           } catch (error) {
             error.message.search('invalid opcode').should.be.above(0);
           }
+          const closed = await tokenPurchase.closed();
           const priceInWei = await tokenPurchase.priceInWei();
-          const opened = await tokenPurchase.opened();
 
-          opened.should.be.false;
-          priceInWei.should.be.bignumber.equal(expectedContractPrice);
-          web3.eth.getBalance(from).should.bignumber.be.equal(senderPreEtherBalance);
-          web3.eth.getBalance(tokenPurchase.address).should.bignumber.be.equal(contractPreEtherBalance);
+          closed.should.be.true;
+          priceInWei.should.be.bignumber.equal(0);
+          web3.eth.getBalance(tokenPurchase.address).should.bignumber.be.equal(0);
+          web3.eth.getBalance(sender).should.bignumber.be.equal(senderPreEtherBalance);
         }
       });
 
       describe('when no ether was transferred to the purchase contract', async function() {
 
-        describe('when an owner approves some tokens to the buyer', async function () {
+        describe('when a seller approves some tokens to the purchaser', async function () {
+          const seller = owner;
 
-          describe('when an owner approved less than the requested amount of tokens to the purchase contract', async function () {
+          describe('when a seller approves less than the requested amount of tokens to the purchase contract', async function () {
             beforeEach(async function() {
-              await myToken.approve(tokenPurchase.address, buyingAmountOfTokens.minus(1), { from: owner });
+              await myToken.approve(tokenPurchase.address, buyingAmountOfTokens.minus(1), { from: seller });
             });
 
-            it('does not transfer the money to the seller nor the tokens to the buyer', async function() {
+            it('does not transfer the money to the seller nor the tokens to the purchaser', async function() {
               await itDoesNotTransferTheTokens();
             });
           });
 
-          describe('when the owner approved the requested amount of tokens to the purchase contract', async function () {
+          describe('when a seller approves the requested amount of tokens to the purchase contract', async function () {
             beforeEach(async function() {
-              await myToken.approve(tokenPurchase.address, buyingAmountOfTokens, { from: owner });
+              await myToken.approve(tokenPurchase.address, buyingAmountOfTokens, { from: seller });
             });
 
-            it('does not transfer the money to the seller nor the tokens to the buyer', async function() {
+            it('does not transfer the money to the seller nor the tokens to the purchaser', async function() {
               await itDoesNotTransferTheTokens();
             });
           });
 
-          describe('when the owner approved more than the requested amount of tokens to the purchase contract', async function () {
+          describe('when a seller approves more than the requested amount of tokens to the purchase contract', async function () {
             beforeEach(async function() {
-              await myToken.approve(tokenPurchase.address, buyingAmountOfTokens.plus(1), { from: owner });
+              await myToken.approve(tokenPurchase.address, buyingAmountOfTokens.plus(1), { from: seller });
             });
 
-            it('does not transfer the money to the seller nor the tokens to the buyer', async function() {
+            it('does not transfer the money to the seller nor the tokens to the purchaser', async function() {
               await itDoesNotTransferTheTokens();
             });
           });
 
           async function itDoesNotTransferTheTokens() {
-            const ownerPreEtherBalance = web3.eth.getBalance(owner);
+            const sellerPreEtherBalance = web3.eth.getBalance(seller);
             const contractPreEtherBalance = web3.eth.getBalance(tokenPurchase.address);
 
             try {
-              await tokenPurchase.claim({from: owner, gasPrice: 0 });
+              await tokenPurchase.claim({ from: seller, gasPrice: 0 });
             } catch (error) {
               error.message.search('invalid opcode').should.be.above(0);
             }
 
-            const buyerTokens = await myToken.balanceOf(purchaser);
-            const opened = await tokenPurchase.opened();
+            const purchaserTokens = await myToken.balanceOf(purchaser);
+            const closed = await tokenPurchase.closed();
 
-            opened.should.be.false;
-            buyerTokens.should.be.bignumber.equal(new BigNumber(0));
-            web3.eth.getBalance(owner).should.be.bignumber.equal(ownerPreEtherBalance);
+            closed.should.be.true;
+            purchaserTokens.should.be.bignumber.equal(0);
+            web3.eth.getBalance(seller).should.be.bignumber.equal(sellerPreEtherBalance);
             web3.eth.getBalance(tokenPurchase.address).should.be.bignumber.equal(contractPreEtherBalance);
           }
+        });
+
+        describe('when the purchaser requests a refund', async function() {
+          let refund = null;
+
+          it('refuses the refund and does not alter the status of the contract', async function() {
+            const purchaserPreEtherBalance = web3.eth.getBalance(purchaser);
+
+            try {
+              refund = await tokenPurchase.refund({ from: purchaser, gasPrice: 0 });
+            } catch (error) {
+              error.message.search('invalid opcode').should.be.above(0);
+            }
+            const closed = await tokenPurchase.closed();
+            const priceInWei = await tokenPurchase.priceInWei();
+
+            closed.should.be.true;
+            priceInWei.should.be.bignumber.equal(0);
+
+            web3.eth.getBalance(tokenPurchase.address).should.be.bignumber.equal(0);
+            web3.eth.getBalance(purchaser).should.be.bignumber.equal(purchaserPreEtherBalance);
+          });
         });
       });
     });
