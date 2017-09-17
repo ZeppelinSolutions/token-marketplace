@@ -2,7 +2,7 @@ import FetchingActions from './fetching'
 import * as ActionTypes from '../actiontypes';
 
 const ErrorActions = {
-  showError(error, message = null) {
+  show(error, message = null) {
     console.error(error)
     return dispatch => {
       dispatch({ type: ActionTypes.SHOW_ERROR, error: (message || error.message) })
@@ -10,7 +10,7 @@ const ErrorActions = {
     }
   },
 
-  resetError() {
+  reset() {
     return dispatch => dispatch({ type: ActionTypes.RESET_ERROR })
   }
 }

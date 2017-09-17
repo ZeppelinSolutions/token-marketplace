@@ -37,14 +37,17 @@ export default class TokenPurchaseFulfill extends React.Component {
         <p>You don't have enough {tokenPurchase.tokenSymbol} balance in your account ({account.address}) to fulfill this contract.</p>
       </div> :
       <div className="col s12">
-        <p>If you fulfill this token purchase contract, then two transactions will be performed:</p>
+        <p><b>If you fulfill this token purchase contract, then two transactions will be performed:</b></p>
         <p>1. Firstly, you will be requested to sign a token approval to the token purchase contract.</p>
         <p>2. Then, you will claim the ether balance of the token purchase contract to be transfer to your account ({account.address}).</p>
       </div>
   }
 
   _notEnoughTokens() {
-    return this.state.account.tokens < this.state.tokenPurchase.amount
+    const account = this.state.account || {}
+    const tokenPurchase = this.state.tokenPurchase || {}
+    if(!account.tokensBalance || !account.tokensBalance.amount || !tokenPurchase.amount) return false
+    return account.tokensBalance.amount.lessThan(tokenPurchase.amount)
   }
 
   _handleSubmit(e) {

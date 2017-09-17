@@ -12,7 +12,7 @@ export default class NewTokenSale extends React.Component {
 
   componentDidMount() {
     Store.subscribe(() => this._onChange())
-    Store.dispatch(AccountActions.findAccount())
+    Store.dispatch(AccountActions.findCurrent())
   }
 
   render() {
@@ -35,7 +35,7 @@ export default class NewTokenSale extends React.Component {
       const deployedAddress = state.account.deployedAddress;
       if(deployedAddress) {
         this.props.history.push(`/token-sale/${deployedAddress}`)
-        Store.dispatch(AccountActions.resetDeployedContract())
+        Store.dispatch(AccountActions.resetContractDeployed())
       }
     }
   }

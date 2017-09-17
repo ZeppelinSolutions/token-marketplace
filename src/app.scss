@@ -35,7 +35,7 @@ html {
 }
 
 .container {
-  width: 60% !important;
+  width: 70% !important;
 }
 
 .main-container {
@@ -50,6 +50,11 @@ html {
 .closed-chip {
   color: white !important;
   background-color: $red !important;
+}
+
+.refunded-chip {
+  color: white !important;
+  background-color: $orange !important;
 }
 
 .material-tooltip {
@@ -80,8 +85,12 @@ nav {
   }
 }
 
-.btn {
+.btn-primary {
   background-color: $primary-3 !important;
+}
+
+.btn-alert {
+  background-color: $red !important;
 }
 
 .super-title {
@@ -141,7 +150,7 @@ p.labeled {
   .content {
     width: 50%;
     font-size: 30px;
-    margin-top: 70px;
+    margin-top: 100px;
     margin-left: 25%;
     color: $primary-2;
     text-align: center;
@@ -161,8 +170,8 @@ p.labeled {
 
 //########## CUSTOM #############
 
-.buy-sell-question {
-  margin-top: 150px !important;
+.home {
+  margin-top: 50px !important;
 }
 
 .buy-button {
@@ -200,6 +209,42 @@ p.labeled {
         text-transform: uppercase;
         font-family: SourceExtraLight;
       }
+    }
+  }
+}
+
+.contracts-lists {
+  margin-top: 50px !important;
+
+  .card-content {
+    padding: 9px !important;
+
+    .title {
+      font-size: 20px !important;
+      margin-top: 0 !important;
+      text-align: center;
+    }
+
+    .collection {
+      border-left: none !important;
+      border-right: none !important;
+    }
+
+    .collection-item {
+      padding: 7px 10px 3px !important;
+    }
+
+    a {
+      color: $primary-5 !important;
+    }
+
+    a:hover {
+      color: $primary-4 !important;
+    }
+
+    .chip {
+      line-height: 25px !important;
+      height: 25px !important;
     }
   }
 }

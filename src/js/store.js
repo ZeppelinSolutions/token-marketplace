@@ -5,7 +5,9 @@ import network from './reducers/network'
 import fetching from './reducers/fetching'
 import account from './reducers/accounts'
 import tokenSale from './reducers/tokensales'
+import tokenSalesList from './reducers/tokensaleslist'
 import tokenPurchase from './reducers/tokenpurchases'
+import tokenPurchasesList from './reducers/tokenpurchaseslist'
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 
 const mainReducer = combineReducers({
@@ -14,7 +16,9 @@ const mainReducer = combineReducers({
   account,
   fetching,
   tokenSale,
+  tokenSalesList,
   tokenPurchase,
+  tokenPurchasesList,
 });
 
 const Store = createStore (

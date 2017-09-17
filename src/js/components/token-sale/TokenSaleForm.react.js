@@ -36,11 +36,11 @@ export default class TokenSaleForm extends React.Component {
             <div className="row">
               <div className="input-field col s3">
                 <label>Amount of tokens you want to sell</label>
-                <input onChange={this._updateAmount} type="number" required/>
+                <input onChange={this._updateAmount} type="number" step="any" required/>
               </div>
               <div className="input-field col s3">
-                <label>WEI price per token</label>
-                <input onChange={this._updatePrice} type="number" required/>
+                <label>Ether price per token</label>
+                <input onChange={this._updatePrice} type="number" step="any" required/>
               </div>
             </div>
           </div>

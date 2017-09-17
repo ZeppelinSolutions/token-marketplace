@@ -2,17 +2,19 @@ import Network from '../network'
 import ErrorActions from './errors'
 import { ERC20 } from '../contracts'
 import * as ActionTypes from '../actiontypes'
+import fromTokens from "../helpers/fromTokens";
+import fromWei from "../helpers/fromWei";
 
 const AccountActions = {
-  findAccount() {
+  findCurrent() {
     return async function(dispatch) {
       try {
         const addresses = await Network.getAccounts()
         const mainAddress = addresses[0]
-        dispatch(AccountActions.receiveAccount(mainAddress))
+        dispatch(AccountActions.receive(mainAddress))
         dispatch(AccountActions.updateEtherBalance(mainAddress))
       } catch(error) {
-        dispatch(ErrorActions.showError(error))
+        dispatch(ErrorActions.show(error))
       }
     }
   },
@@ -21,9 +23,10 @@ const AccountActions = {
     return async function(dispatch) {
       try {
         const balance = await Network.getBalance(address);
-        dispatch(AccountActions.receiveEtherBalance(balance))
+        const etherBalance = fromWei(balance);
+        dispatch(AccountActions.receiveEtherBalance(etherBalance))
       } catch(error) {
-        dispatch(ErrorActions.showError(error))
+        dispatch(ErrorActions.show(error))
       }
     }
   },
@@ -33,33 +36,36 @@ const AccountActions = {
       try {
         const erc20 = await ERC20.at(erc20Address)
         const tokens = await erc20.balanceOf(owner)
-        dispatch(AccountActions.receiveTokenBalance(tokens))
+        const symbol = await erc20.symbol()
+        const decimals = await erc20.decimals()
+        // TODO: should I use fromTokens(tokens, decimals)
+        const tokensBalance = { symbol: symbol, amount: tokens }
+        dispatch(AccountActions.receiveTokenBalance(tokensBalance))
       } catch (error) {
-        dispatch(ErrorActions.showError(error))
+        dispatch(ErrorActions.show(error))
       }
     }
   },
 
-  receiveAccount(address) {
+  receive(address) {
     return { type: ActionTypes.RECEIVE_ACCOUNT, address }
   },
 
-  deployedNewContract(address) {
+  notifyContractDeployed(address) {
     return { type: ActionTypes.DEPLOYED_NEW_CONTRACT, address }
   },
 
-  resetDeployedContract() {
+  resetContractDeployed() {
     return { type: ActionTypes.DEPLOYED_NEW_CONTRACT_RESET }
   },
 
-  receiveEtherBalance(balance) {
-    const etherBalance = Network.web3().fromWei(balance, 'ether').toString()
-    return { type: ActionTypes.RECEIVE_ETHER_BALANCE, balance: etherBalance }
+  receiveEtherBalance(etherBalance) {
+    return { type: ActionTypes.RECEIVE_ETHER_BALANCE, etherBalance }
   },
 
-  receiveTokenBalance(tokens) {
-    return { type: ActionTypes.RECEIVE_TOKEN_BALANCE, tokens: tokens.toString() }
-  }
+  receiveTokenBalance(tokensBalance) {
+    return { type: ActionTypes.RECEIVE_TOKEN_BALANCE, tokensBalance }
+  },
 }
 
 export default AccountActions

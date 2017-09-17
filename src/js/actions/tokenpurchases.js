@@ -1,38 +1,65 @@
+import BigNumber from 'bignumber.js'
 import ErrorActions from './errors'
 import AccountActions from './accounts'
 import FetchingActions from './fetching'
 import * as ActionTypes from '../actiontypes'
 import { GAS } from '../constants'
-import { ERC20, TokenPurchase } from '../contracts'
+import { ERC20, TokenPurchase, TokenPurchaseFactory } from '../contracts'
+import toTokens from "../helpers/toTokens";
+import fromTokens from "../helpers/fromTokens";
+import fromWei from "../helpers/fromWei";
+import toWei from "../helpers/toWei";
 
 const TokenPurchaseActions = {
 
-  getTokenPurchase(tokenPurchaseAddress) {
+  findAll() {
     return async function(dispatch) {
       try {
-        dispatch(FetchingActions.start('Loading token purchase data'))
-        const tokenPurchase = await TokenPurchase.at(tokenPurchaseAddress)
-        dispatch(TokenPurchaseActions.receiveTokenPurchase(tokenPurchase))
+        const factory = await TokenPurchaseFactory.deployed()
+        const events = factory.TokenPurchaseCreated({}, { fromBlock: 1686385, toBlock: 'latest' });
+        events.watch(function(error, result) {
+          if(error) ErrorActions.show(error)
+          else dispatch(TokenPurchaseActions.loadToList(result.args.tokenPurchaseAddress))
+        })
       } catch(error) {
-        dispatch(ErrorActions.showError(error, `There was an error trying to load given token purchase contract at ${tokenPurchaseAddress}`))
+        dispatch(ErrorActions.show(error))
       }
     }
   },
 
-  create(erc20Address, buyer, amount, pricePerToken) {
+  find(tokenPurchaseAddress) {
+    return async function(dispatch) {
+      try {
+        dispatch({ type: ActionTypes.FINDING_TOKEN_PURCHASE })
+        dispatch(FetchingActions.start('Loading token purchase data'))
+        const tokenPurchase = await TokenPurchase.at(tokenPurchaseAddress)
+        dispatch(TokenPurchaseActions.load(tokenPurchase))
+      } catch(error) {
+        dispatch(ErrorActions.show(error, `There was an error trying to load given token purchase contract at ${tokenPurchaseAddress}`))
+      }
+    }
+  },
+
+  create(erc20Address, purchaser, amount, pricePerTokenInEther) {
     return async function(dispatch) {
       dispatch(FetchingActions.start('Creating your token purchase contract'))
       try {
-        const price = pricePerToken * amount
         const erc20 = await ERC20.at(erc20Address)
-        const tokenPurchase = await TokenPurchase.new(erc20.address, amount, { from: buyer, gas: GAS })
+        const decimals = await erc20.decimals()
+        const factory = await TokenPurchaseFactory.deployed()
+        // TODO: should I use toTokens(amount, decimals)?
+        const transaction = await factory.createTokenPurchase(erc20Address, amount, { from: purchaser, gas: GAS })
+        const tokenPurchaseAddress = transaction.logs[0].args.tokenPurchaseAddress;
         dispatch(FetchingActions.start('Sending ether to your token purchase contract'))
-        await tokenPurchase.sendTransaction({ from: buyer, value: price, gas: GAS })
-        dispatch(AccountActions.updateEtherBalance(buyer))
-        dispatch(AccountActions.deployedNewContract(tokenPurchase.address))
+        const price = new BigNumber(pricePerTokenInEther).times(amount)
+        const tokenSale = await TokenPurchase.at(tokenPurchaseAddress);
+        await tokenSale.sendTransaction({ from: purchaser, value: toWei(price), gas: GAS })
+        dispatch(AccountActions.updateEtherBalance(purchaser))
+        dispatch(TokenPurchaseActions.loadToList(tokenPurchaseAddress))
+        dispatch(AccountActions.notifyContractDeployed(tokenPurchaseAddress))
         dispatch(FetchingActions.stop())
       } catch (error) {
-        dispatch(ErrorActions.showError(error))
+        dispatch(ErrorActions.show(error))
       }
     }
   },
@@ -45,40 +72,117 @@ const TokenPurchaseActions = {
         const erc20Address = await tokenPurchase.token()
         const erc20 = await ERC20.at(erc20Address)
         const amount = await tokenPurchase.amount()
-        dispatch(FetchingActions.start(`Approving ${amount} tokens to the token purchase contract`))
-        await erc20.approve(tokenPurchase.address, amount, {from: seller, gas: GAS})
+        dispatch(FetchingActions.start(`Approving amount tokens to the token purchase contract`))
+        await erc20.approve(tokenPurchase.address, amount, { from: seller, gas: GAS })
         dispatch(FetchingActions.start('Claiming your ether to the token purchase contract'))
-        await tokenPurchase.claim({from: seller, gas: GAS})
+        await tokenPurchase.claim({ from: seller, gas: GAS })
         dispatch(AccountActions.updateEtherBalance(seller))
         dispatch(AccountActions.updateTokensBalance(seller, erc20Address))
-        dispatch(TokenPurchaseActions.receiveTokenPurchase(tokenPurchase))
-        dispatch(FetchingActions.stop())
+        dispatch(TokenPurchaseActions.load(tokenPurchase))
       } catch (error) {
-        dispatch(ErrorActions.showError(error))
+        dispatch(ErrorActions.show(error))
       }
     }
   },
 
-  receiveTokenPurchase(tokenPurchase) {
+  refund(tokenPurchaseAddress, purchaser) {
+    return async function(dispatch) {
+      dispatch(FetchingActions.start('Refunding your token purchase contract'))
+      try {
+        const tokenPurchase = await TokenPurchase.at(tokenPurchaseAddress)
+        const erc20Address = await tokenPurchase.token()
+        await tokenPurchase.refund({ from: purchaser, gas: GAS })
+        dispatch(AccountActions.updateEtherBalance(purchaser))
+        dispatch(AccountActions.updateTokensBalance(purchaser, erc20Address))
+        dispatch(TokenPurchaseActions.load(tokenPurchase))
+      } catch (error) {
+        dispatch(ErrorActions.show(error))
+      }
+    }
+  },
+
+  loadToList(tokenPurchaseAddress) {
     return async function(dispatch) {
       try {
-        const erc20Address = await tokenPurchase.token()
-        const erc20 = await ERC20.at(erc20Address)
-        const tokenPurchaseInformation = {
-          tokenName: erc20.name,
-          tokenSymbol: erc20.symbol,
-          address: tokenPurchase.address,
-          buyer: await tokenPurchase.owner(),
-          opened: await tokenPurchase.opened(),
-          amount: (await tokenPurchase.amount()).toString(),
-          price: (await tokenPurchase.priceInWei()).toString(),
-          tokenAddress: await tokenPurchase.token(),
+        const tokenPurchase = await TokenPurchase.at(tokenPurchaseAddress)
+        const information = await TokenPurchaseActions._buildTokenPurchaseInformation(tokenPurchase);
+        dispatch(TokenPurchaseActions.add(information))
+        if(information.closed) {
+          dispatch(TokenPurchaseActions.loadRefundInformation(tokenPurchase, information, ActionTypes.ADD_TOKEN_PURCHASE))
+          dispatch(TokenPurchaseActions.loadSellerInformation(tokenPurchase, information, ActionTypes.ADD_TOKEN_PURCHASE))
         }
-        dispatch({ type: ActionTypes.RECEIVE_TOKEN_PURCHASE, tokenPurchase: tokenPurchaseInformation })
+      } catch(error) {
+        dispatch(ErrorActions.show(error))
+      }
+    }
+  },
+
+  load(tokenPurchase) {
+    return async function(dispatch) {
+      try {
+        const information = await TokenPurchaseActions._buildTokenPurchaseInformation(tokenPurchase);
+        dispatch(TokenPurchaseActions.receive(information))
+        if(information.closed) {
+          dispatch(TokenPurchaseActions.loadRefundInformation(tokenPurchase, information, ActionTypes.RECEIVE_TOKEN_PURCHASE))
+          dispatch(TokenPurchaseActions.loadSellerInformation(tokenPurchase, information, ActionTypes.RECEIVE_TOKEN_PURCHASE))
+        }
         dispatch(FetchingActions.stop())
       } catch (error) {
-        dispatch(ErrorActions.showError(error))
+        dispatch(ErrorActions.show(error))
       }
+    }
+  },
+
+  loadSellerInformation(tokenPurchase, tokenPurchaseInformation, actionType) {
+    return dispatch => {
+      const events = tokenPurchase.TokenSold({}, { fromBlock: 0, toBlock: 'latest' });
+      events.watch(function (error, result) {
+        if (error) ErrorActions.show(error)
+        else {
+          tokenPurchaseInformation.price = fromWei(result.args.price)
+          tokenPurchaseInformation.seller = result.args.seller
+          dispatch({ type: actionType, tokenPurchase: tokenPurchaseInformation })
+        }
+      })
+    }
+  },
+
+  loadRefundInformation(tokenPurchase, tokenPurchaseInformation, actionType) {
+    return dispatch => {
+      const events = tokenPurchase.Refund({}, { fromBlock: 0, toBlock: 'latest' });
+      events.watch(function (error, result) {
+        if (error) ErrorActions.show(error)
+        else {
+          tokenPurchaseInformation.refunded = true
+          tokenPurchaseInformation.price = fromWei(result.args.price)
+          dispatch({ type: actionType, tokenPurchase: tokenPurchaseInformation })
+        }
+      })
+    }
+  },
+
+  receive(tokenPurchase) {
+    return { type: ActionTypes.RECEIVE_TOKEN_PURCHASE, tokenPurchase }
+  },
+
+  add(tokenPurchase) {
+    return { type: ActionTypes.ADD_TOKEN_PURCHASE, tokenPurchase }
+  },
+
+  async _buildTokenPurchaseInformation(tokenPurchase) {
+    const erc20Address = await tokenPurchase.token()
+    const erc20 = await ERC20.at(erc20Address)
+    const decimals = await erc20.decimals()
+    return {
+      tokenName: await erc20.name(),
+      tokenSymbol: await erc20.symbol(),
+      address: tokenPurchase.address,
+      closed: await tokenPurchase.closed(),
+      purchaser: await tokenPurchase.owner(),
+      // TODO: should I use fromTokens(tokens, decimals) ?
+      amount: await tokenPurchase.amount(),
+      price: fromWei(await tokenPurchase.priceInWei()),
+      tokenAddress: await tokenPurchase.token(),
     }
   },
 }

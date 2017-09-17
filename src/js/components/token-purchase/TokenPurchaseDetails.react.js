@@ -1,19 +1,25 @@
 import React from 'react'
+import Store from '../../store'
 import { Link } from 'react-router-dom'
+import TokenPurchaseActions from '../../actions/tokenpurchases'
+import contractStatusToString from "../../helpers/contractStatusToString";
 
 export default class TokenPurchaseDetails extends React.Component {
   constructor(props){
     super(props)
-    this.state = { tokenPurchase: this.props.tokenPurchase }
+    this.state = { tokenPurchase: this.props.tokenPurchase, account: this.props.account }
+    this._refund = this._refund.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ tokenPurchase: nextProps.tokenPurchase })
+    this.setState({ tokenPurchase: nextProps.tokenPurchase, account: nextProps.account })
   }
 
   render() {
+    const account = this.state.account || {}
     const tokenPurchase = this.state.tokenPurchase;
-    const status = tokenPurchase.opened ? 'open' : 'closed'
+    const status = contractStatusToString(tokenPurchase)
+    const isOwner = tokenPurchase.purchaser === account.address
     return (
       <div ref="tokenPurchaseDetails" className={"col " + this.props.col}>
         <div className="card">
@@ -28,16 +34,16 @@ export default class TokenPurchaseDetails extends React.Component {
                 <p className="labeled">{tokenPurchase.address}</p>
               </div>
               <div className="input-field col s6">
-                <label className="active">Buyer</label>
-                <p className="labeled">{tokenPurchase.buyer}</p>
+                <label className="active">Purchaser</label>
+                <p className="labeled">{tokenPurchase.purchaser}</p>
               </div>
               <div className="input-field col s3">
                 <label className="active">Requested amount of tokens</label>
-                <p className="labeled">{tokenPurchase.amount}</p>
+                <p className="labeled">{tokenPurchase.amount.toString()}</p>
               </div>
               <div className="input-field col s3">
-                <label className="active">Total WEI you will get in return</label>
-                <p className="labeled">{tokenPurchase.price}</p>
+                <label className="active">Total Ether you will get in return</label>
+                <p className="labeled">{tokenPurchase.price.toString()}</p>
               </div>
               <div className="input-field col s3">
                 <label className="active">Token Name</label>
@@ -55,8 +61,20 @@ export default class TokenPurchaseDetails extends React.Component {
               </div>
             </div>
           </div>
+          { isOwner ?
+              <div className="card-action">
+                <button className="btn btn-alert" disabled={tokenPurchase.closed} onClick={this._refund}>Refund</button>
+              </div>
+            : ''
+          }
         </div>
       </div>
     );
+  }
+
+  _refund(e) {
+    e.preventDefault()
+    const tokenPurchase = this.state.tokenPurchase;
+    Store.dispatch(TokenPurchaseActions.refund(tokenPurchase.address, tokenPurchase.purchaser))
   }
 }

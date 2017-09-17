@@ -1,19 +1,25 @@
 import React from 'react'
+import Store from '../../store'
 import { Link } from 'react-router-dom'
+import TokenSaleActions from '../../actions/tokensales'
+import contractStatusToString from '../../helpers/contractStatusToString'
 
 export default class TokenSaleDetails extends React.Component {
   constructor(props){
     super(props)
     this.state = { tokenSale: this.props.tokenSale }
+    this._refund = this._refund.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ tokenSale: nextProps.tokenSale })
+    this.setState({ tokenSale: nextProps.tokenSale, account: nextProps.account })
   }
 
   render() {
-    const tokenSale = this.state.tokenSale;
-    const status = tokenSale.closed ? 'closed' : 'open'
+    const account = this.state.account || {}
+    const tokenSale = this.state.tokenSale
+    const status = contractStatusToString(tokenSale)
+    const isOwner = tokenSale.seller === account.address
     return (
       <div ref="tokenSaleDetails" className={"col " + this.props.col}>
         <div className="card">
@@ -33,11 +39,11 @@ export default class TokenSaleDetails extends React.Component {
               </div>
               <div className="input-field col s3">
                 <label className="active">Selling amount of tokens</label>
-                <p className="labeled">{tokenSale.amount}</p>
+                <p className="labeled">{tokenSale.amount.toString()}</p>
               </div>
               <div className="input-field col s3">
-                <label className="active">Total WEI you are willing to pay</label>
-                <p className="labeled">{tokenSale.price}</p>
+                <label className="active">Total Ether you are willing to pay</label>
+                <p className="labeled">{tokenSale.price.toString()}</p>
               </div>
               <div className="input-field col s3">
                 <label className="active">Token Name</label>
@@ -55,8 +61,20 @@ export default class TokenSaleDetails extends React.Component {
               </div>
             </div>
           </div>
+          { isOwner ?
+            <div className="card-action">
+              <button className="btn btn-alert" disabled={tokenSale.closed} onClick={this._refund}>Refund</button>
+            </div>
+            : ''
+          }
         </div>
       </div>
     );
+  }
+
+  _refund(e) {
+    e.preventDefault()
+    const tokenSale = this.state.tokenSale;
+    Store.dispatch(TokenSaleActions.refund(tokenSale.address, tokenSale.seller))
   }
 }

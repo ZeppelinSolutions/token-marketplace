@@ -14,14 +14,14 @@ export default class ShowTokenSale extends React.Component {
 
   componentDidMount() {
     Store.subscribe(() => this._onChange())
-    Store.dispatch(AccountActions.findAccount())
-    Store.dispatch(TokenSaleActions.getTokenSale(this.props.match.params.address))
+    Store.dispatch(AccountActions.findCurrent())
+    Store.dispatch(TokenSaleActions.find(this.props.match.params.address))
   }
 
   render() {
     const account = this.state.account
     const tokenSale = this.state.tokenSale
-    const undefinedAccount = typeof account.balance === 'undefined'
+    const undefinedAccount = typeof account.etherBalance === 'undefined'
     const undefinedContract = typeof tokenSale.closed === 'undefined'
     const loading = undefinedContract || undefinedAccount
 
@@ -30,8 +30,8 @@ export default class ShowTokenSale extends React.Component {
         {loading ? '' :
         <div className="row">
           <Account account={account} col="s12"/>
-          <TokenSaleDetails tokenSale={tokenSale} col="s12"/>
-          {tokenSale.closed ? <TokenSaleFulfill tokenSale={tokenSale} account={account} col="s12"/> : ''}
+          <TokenSaleDetails tokenSale={tokenSale} account={account} col="s12"/>
+          {!tokenSale.closed ? <TokenSaleFulfill tokenSale={tokenSale} account={account} col="s12"/> : ''}
         </div>}
       </div>
     )
@@ -41,7 +41,7 @@ export default class ShowTokenSale extends React.Component {
     if(this.refs.tokenSale) {
       const state = Store.getState()
       this.setState({ tokenSale: state.tokenSale, account: state.account })
-      if(state.tokenSale.tokenAddress && state.account.address && state.account.tokens === null)
+      if(state.tokenSale.tokenAddress && state.account.address && state.account.tokensBalance === null)
         Store.dispatch(AccountActions.updateTokensBalance(state.account.address, state.tokenSale.tokenAddress))
     }
   }

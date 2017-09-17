@@ -19,7 +19,7 @@ const NetworkActions = {
           dispatch(NetworkActions.couldAccessAccount()) :
           dispatch(NetworkActions.couldNotAccessAccount())
       } catch(error) {
-        dispatch(ErrorActions.showError(error))
+        dispatch(ErrorActions.show(error))
       }
     }
   },

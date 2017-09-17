@@ -14,15 +14,15 @@ export default class ShowTokenPurchase extends React.Component {
 
   componentDidMount() {
     Store.subscribe(() => this._onChange())
-    Store.dispatch(AccountActions.findAccount())
-    Store.dispatch(TokenPurchaseActions.getTokenPurchase(this.props.match.params.address))
+    Store.dispatch(AccountActions.findCurrent())
+    Store.dispatch(TokenPurchaseActions.find(this.props.match.params.address))
   }
 
   render() {
     const account = this.state.account
     const tokenPurchase = this.state.tokenPurchase
-    const undefinedAccount = typeof account.balance === 'undefined'
-    const undefinedContract = typeof tokenPurchase.opened === 'undefined'
+    const undefinedAccount = typeof account.etherBalance === 'undefined'
+    const undefinedContract = typeof tokenPurchase.closed === 'undefined'
     const loading = undefinedContract || undefinedAccount
 
     return (
@@ -30,8 +30,8 @@ export default class ShowTokenPurchase extends React.Component {
         {loading ? '' :
         <div className="row">
           <Account account={account} col="s12"/>
-          <TokenPurchaseDetails tokenPurchase={tokenPurchase} col="s12"/>
-          {tokenPurchase.opened ? <TokenPurchaseFulfill tokenPurchase={tokenPurchase} account={account} col="s12"/> : ''}
+          <TokenPurchaseDetails tokenPurchase={tokenPurchase} account={account} col="s12"/>
+          {!tokenPurchase.closed ? <TokenPurchaseFulfill tokenPurchase={tokenPurchase} account={account} col="s12"/> : ''}
         </div>}
       </div>
     )
@@ -41,7 +41,7 @@ export default class ShowTokenPurchase extends React.Component {
     if(this.refs.tokenPurchase) {
       const state = Store.getState()
       this.setState({ tokenPurchase: state.tokenPurchase, account: state.account })
-      if(state.tokenPurchase.tokenAddress && state.account.address && state.account.tokens === null)
+      if(state.tokenPurchase.tokenAddress && state.account.address && state.account.tokensBalance === null)
         Store.dispatch(AccountActions.updateTokensBalance(state.account.address, state.tokenPurchase.tokenAddress))
     }
   }

@@ -32,7 +32,7 @@ export default class Error extends React.Component {
   _cleanError(e) {
     e.preventDefault();
     this.setState({ error: null })
-    Store.dispatch(ErrorActions.resetError())
+    Store.dispatch(ErrorActions.reset())
   }
 
   _onChange() {

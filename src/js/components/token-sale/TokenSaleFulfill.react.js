@@ -36,13 +36,16 @@ export default class TokenSaleFulfill extends React.Component {
         <p>You don't have enough ether balance in your account ({account.address}) to fulfill this contract.</p>
       </div> :
       <div className="col s12">
-        <p>If you fulfill this token sale contract, then one transaction will be performed:</p>
+        <p><b>If you fulfill this token sale contract, then one transaction will be performed:</b></p>
         <p>You will be requested to sign an ether transaction from your account ({account.address}) to the token sale contract, in order to receive the given amount of tokens in return.</p>
       </div>
   }
 
   _notEnoughEther() {
-    return this.state.account.balance < this.state.tokenSale.balance
+    const account = this.state.account || {};
+    const tokenSale = this.state.tokenSale || {};
+    if(!account.etherBalance || !tokenSale.price) return false;
+    return account.etherBalance.lessThan(tokenSale.price)
   }
 
   _handleSubmit(e) {
