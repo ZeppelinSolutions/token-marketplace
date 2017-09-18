@@ -32,7 +32,7 @@ export default class Account extends React.Component {
                 </div>
                 <div className="input-field col s3">
                   <label className="active">{tokensBalance.symbol || 'Tokens'} Balance</label>
-                  <p className="labeled">{(tokensBalance.amount || '...').toString()}</p>
+                  <p className="labeled">{tokensBalance.amount ? tokensBalance.amount.toFixed(tokensBalance.decimals) : '...'}</p>
                 </div>
               </div>}
             </div>

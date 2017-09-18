@@ -5,10 +5,10 @@ import FetchingActions from './fetching'
 import * as ActionTypes from '../actiontypes'
 import { GAS } from '../constants'
 import { ERC20, TokenPurchase, TokenPurchaseFactory } from '../contracts'
-import toTokens from "../helpers/toTokens";
-import fromTokens from "../helpers/fromTokens";
-import fromWei from "../helpers/fromWei";
-import toWei from "../helpers/toWei";
+import toWei from '../helpers/toWei'
+import fromWei from '../helpers/fromWei'
+import toTokens from '../helpers/toTokens'
+import fromTokens from '../helpers/fromTokens'
 
 const TokenPurchaseActions = {
 
@@ -47,8 +47,7 @@ const TokenPurchaseActions = {
         const erc20 = await ERC20.at(erc20Address)
         const decimals = await erc20.decimals()
         const factory = await TokenPurchaseFactory.deployed()
-        // TODO: should I use toTokens(amount, decimals)?
-        const transaction = await factory.createTokenPurchase(erc20Address, amount, { from: purchaser, gas: GAS })
+        const transaction = await factory.createTokenPurchase(erc20Address, toTokens(amount, decimals), { from: purchaser, gas: GAS })
         const tokenPurchaseAddress = transaction.logs[0].args.tokenPurchaseAddress;
         dispatch(FetchingActions.start('Sending ether to your token purchase contract'))
         const price = new BigNumber(pricePerTokenInEther).times(amount)
@@ -57,7 +56,6 @@ const TokenPurchaseActions = {
         dispatch(AccountActions.updateEtherBalance(purchaser))
         dispatch(TokenPurchaseActions.loadToList(tokenPurchaseAddress))
         dispatch(AccountActions.notifyContractDeployed(tokenPurchaseAddress))
-        dispatch(FetchingActions.stop())
       } catch (error) {
         dispatch(ErrorActions.show(error))
       }
@@ -71,9 +69,10 @@ const TokenPurchaseActions = {
         const tokenPurchase = await TokenPurchase.at(tokenPurchaseAddress)
         const erc20Address = await tokenPurchase.token()
         const erc20 = await ERC20.at(erc20Address)
+        const decimals = await erc20.decimals()
         const amount = await tokenPurchase.amount()
-        dispatch(FetchingActions.start(`Approving amount tokens to the token purchase contract`))
-        await erc20.approve(tokenPurchase.address, amount, { from: seller, gas: GAS })
+        dispatch(FetchingActions.start(`Approving ${toTokens(amount, decimals)} tokens to the token purchase contract`))
+        await erc20.approve(tokenPurchase.address, toTokens(amount, decimals), { from: seller, gas: GAS })
         dispatch(FetchingActions.start('Claiming your ether to the token purchase contract'))
         await tokenPurchase.claim({ from: seller, gas: GAS })
         dispatch(AccountActions.updateEtherBalance(seller))
@@ -141,6 +140,7 @@ const TokenPurchaseActions = {
         else {
           tokenPurchaseInformation.price = fromWei(result.args.price)
           tokenPurchaseInformation.seller = result.args.seller
+          tokenPurchaseInformation.transactionHash = result.transactionHash
           dispatch({ type: actionType, tokenPurchase: tokenPurchaseInformation })
         }
       })
@@ -155,6 +155,7 @@ const TokenPurchaseActions = {
         else {
           tokenPurchaseInformation.refunded = true
           tokenPurchaseInformation.price = fromWei(result.args.price)
+          tokenPurchaseInformation.transactionHash = result.transactionHash
           dispatch({ type: actionType, tokenPurchase: tokenPurchaseInformation })
         }
       })
@@ -174,13 +175,13 @@ const TokenPurchaseActions = {
     const erc20 = await ERC20.at(erc20Address)
     const decimals = await erc20.decimals()
     return {
+      tokenDecimals: decimals,
       tokenName: await erc20.name(),
       tokenSymbol: await erc20.symbol(),
       address: tokenPurchase.address,
       closed: await tokenPurchase.closed(),
       purchaser: await tokenPurchase.owner(),
-      // TODO: should I use fromTokens(tokens, decimals) ?
-      amount: await tokenPurchase.amount(),
+      amount: fromTokens(await tokenPurchase.amount(), decimals),
       price: fromWei(await tokenPurchase.priceInWei()),
       tokenAddress: await tokenPurchase.token(),
     }

@@ -38,8 +38,7 @@ const AccountActions = {
         const tokens = await erc20.balanceOf(owner)
         const symbol = await erc20.symbol()
         const decimals = await erc20.decimals()
-        // TODO: should I use fromTokens(tokens, decimals)
-        const tokensBalance = { symbol: symbol, amount: tokens }
+        const tokensBalance = { symbol: symbol, decimals: decimals, amount: fromTokens(tokens, decimals) }
         dispatch(AccountActions.receiveTokenBalance(tokensBalance))
       } catch (error) {
         dispatch(ErrorActions.show(error))

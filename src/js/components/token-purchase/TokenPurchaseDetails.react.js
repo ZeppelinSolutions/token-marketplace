@@ -37,6 +37,20 @@ export default class TokenPurchaseDetails extends React.Component {
                 <label className="active">Purchaser</label>
                 <p className="labeled">{tokenPurchase.purchaser}</p>
               </div>
+              { tokenPurchase.transactionHash ?
+                <div className={"input-field col " + (tokenPurchase.seller ? 's6' : 's12 ')}>
+                  <label className="active">Confirmed Transaction</label>
+                  <p className="labeled">
+                    <a href={`https://ropsten.etherscan.io/tx/${tokenPurchase.transactionHash}`} target="blank">{tokenPurchase.transactionHash}</a>
+                  </p>
+                </div> : ''
+              }
+              { tokenPurchase.seller ?
+                <div className="input-field col s6">
+                  <label className="active">Seller</label>
+                  <p className="labeled">{tokenPurchase.seller}</p>
+                </div> : ''
+              }
               <div className="input-field col s3">
                 <label className="active">Requested amount of tokens</label>
                 <p className="labeled">{tokenPurchase.amount.toString()}</p>

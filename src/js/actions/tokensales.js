@@ -5,10 +5,10 @@ import FetchingActions from './fetching'
 import * as ActionTypes from '../actiontypes'
 import { GAS } from '../constants'
 import { ERC20, TokenSale, TokenSaleFactory } from '../contracts'
-import toTokens from "../helpers/toTokens";
-import fromTokens from "../helpers/fromTokens";
-import fromWei from "../helpers/fromWei";
-import toWei from "../helpers/toWei";
+import toWei from '../helpers/toWei'
+import fromWei from '../helpers/fromWei'
+import toTokens from '../helpers/toTokens'
+import fromTokens from '../helpers/fromTokens'
 
 const TokenSaleActions = {
 
@@ -52,13 +52,11 @@ const TokenSaleActions = {
         dispatch(FetchingActions.start('Sending tokens to your token sale contract'))
         const erc20 = await ERC20.at(erc20Address)
         const decimals = await erc20.decimals()
-        // TODO: should I use toTokens(amount, decimals) ?
-        await erc20.transfer(tokenSaleAddress, amount, { from: seller, gas: GAS })
+        await erc20.transfer(tokenSaleAddress, toTokens(amount, decimals), { from: seller, gas: GAS })
         dispatch(AccountActions.updateEtherBalance(seller))
         dispatch(AccountActions.updateTokensBalance(seller, erc20Address))
         dispatch(TokenSaleActions.loadToList(tokenSaleAddress))
         dispatch(AccountActions.notifyContractDeployed(tokenSaleAddress))
-        dispatch(FetchingActions.stop())
       } catch (error) {
         dispatch(ErrorActions.show(error))
       }
@@ -136,8 +134,9 @@ const TokenSaleActions = {
       events.watch(function (error, result) {
         if (error) ErrorActions.show(error)
         else {
-          tokenSaleInformation.amount = result.args.amount
           tokenSaleInformation.purchaser = result.args.buyer
+          tokenSaleInformation.amount = fromTokens(result.args.amount, tokenSaleInformation.tokenDecimals)
+          tokenSaleInformation.transactionHash = result.transactionHash
           dispatch({ type: actionType, tokenSale: tokenSaleInformation })
         }
       })
@@ -151,7 +150,8 @@ const TokenSaleActions = {
         if (error) ErrorActions.show(error)
         else {
           tokenSaleInformation.refunded = true
-          tokenSaleInformation.amount = result.args.amount
+          tokenSaleInformation.amount = fromTokens(result.args.amount, tokenSaleInformation.tokenDecimals)
+          tokenSaleInformation.transactionHash = result.transactionHash
           dispatch({ type: actionType, tokenSale: tokenSaleInformation })
         }
       })
@@ -171,13 +171,13 @@ const TokenSaleActions = {
     const erc20 = await ERC20.at(erc20Address)
     const decimals = await erc20.decimals()
     return {
+      tokenDecimals: decimals,
       tokenName: await erc20.name(),
       tokenSymbol: await erc20.symbol(),
       address: tokenSale.address,
       seller: await tokenSale.owner(),
       closed: await tokenSale.closed(),
-      // TODO: should I use fromTokens(await tokenSale.amount(), decimals) ?
-      amount: await tokenSale.amount(),
+      amount: fromTokens(await tokenSale.amount(), decimals),
       price: fromWei(await tokenSale.priceInWei()),
       tokenAddress: await tokenSale.token(),
     };
