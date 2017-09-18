@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
 import './DetailedERC20.sol';
-import '../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol';
+import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 
 contract TokenSale is Ownable {
   bool public closed;
