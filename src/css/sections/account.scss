@@ -1,0 +1,22 @@
+@import "../variables";
+
+.account-details {
+  .card {
+    color: #f3f3fd !important;
+    font-size: 13px !important;
+    background-color: $primary-5;
+
+    .card-content {
+      padding: 10px 24px !important;
+
+      .title {
+        font-size: 20px;
+        letter-spacing: 0;
+        color: $primary-2;
+        margin: 2px !important;
+        text-transform: uppercase;
+        font-family: SourceExtraLight;
+      }
+    }
+  }
+}

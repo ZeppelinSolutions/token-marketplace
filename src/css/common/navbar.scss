@@ -1,0 +1,17 @@
+@import "../variables";
+
+nav {
+  color: $primary-1;
+  background-color: $primary-2 !important;
+
+  .search-contract {
+    width: 350px !important;
+    font-size: 14px !important;
+    text-align: right !important;
+  }
+
+  .brand-logo {
+    font-family: SourceLight;
+    text-transform: uppercase;
+  }
+}

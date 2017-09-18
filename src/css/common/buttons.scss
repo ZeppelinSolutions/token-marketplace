@@ -1,0 +1,44 @@
+@import "../variables";
+
+.btn-primary {
+  background-color: $primary-3 !important;
+}
+
+.btn-alert {
+  background-color: $red !important;
+}
+
+.buy-button {
+  margin: 0 40px 0 -10px;
+}
+
+.rounded-btn {
+  cursor: pointer;
+  text-align: center;
+  margin: 0 10px !important;
+  position: static !important;
+  z-index: 9999 !important;
+  color: white !important;
+  background-color: #FF5252 !important;
+}
+
+.close-error {
+  float: right;
+  margin-top: -10px;
+  color: lightgray;
+  font-family: sans-serif;
+  text-shadow: 2px 2px grey;
+  cursor: pointer;
+}
+
+.material-tooltip {
+  margin-top: -10px;
+
+  span {
+    color: $primary-3;
+  }
+
+  .backdrop {
+    background-color: $primary-0 !important;
+  }
+}

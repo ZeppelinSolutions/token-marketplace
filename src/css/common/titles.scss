@@ -1,0 +1,15 @@
+@import "../variables";
+
+.super-title {
+  font-family: SourceRegular;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: $primary-5;
+}
+
+.title {
+  font-family: SourceExtraLight;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: $primary-2;
+}

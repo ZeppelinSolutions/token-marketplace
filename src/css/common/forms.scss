@@ -1,0 +1,13 @@
+@import "../variables";
+
+label {
+  font-size: 0.85rem !important;
+
+  &.active {
+    font-size: 12px !important;
+  }
+}
+
+p.labeled {
+  padding: 4px 0 6px !important;
+}
