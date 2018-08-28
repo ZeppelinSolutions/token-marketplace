@@ -11,7 +11,7 @@ const config = {
     path: path.join(__dirname, '/dist')
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.(js|jsx)$/,
         exclude: /(node_modules)/,
